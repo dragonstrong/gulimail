@@ -15,5 +15,7 @@
         <module>gulimall-coupon</module>
         <module>gulimall-member</module>
         <module>gilimall-ware</module>
+        <module>renren-fast</module>
+        <module>renren-generator</module>
     </modules>
 </project>
