@@ -10,6 +10,7 @@
     <packaging>pom</packaging>  <!--类型：pom-->
     <!--聚合各模块-->
     <modules>
+        <module>gulimall-common</module>
         <module>gulimall-product</module>
         <module>gulimall-order</module>
         <module>gulimall-coupon</module>
@@ -17,6 +18,5 @@
         <module>gilimall-ware</module>
         <module>renren-fast</module>
         <module>renren-generator</module>
-        <module>gulimall-common</module>
     </modules>
 </project>
