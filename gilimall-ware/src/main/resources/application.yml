@@ -1,0 +1,18 @@
+#配置mysql数据源
+spring:
+  datasource:
+    username: root
+    password: 181181@Lq
+    url: jdbc:mysql://192.168.30.128:4006/gulimall_wms
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# 配置mysql  .xml文件路径
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml   # classpath*表示不只扫描自己的类路径，也包含引用其他jar包的类路径
+  # 主键自增
+  global-config:
+    db-config:
+      id-type: auto
+#服务端口
+server:
+  port: 11000

@@ -9,13 +9,16 @@
         <module name="product" />
         <module name="coupon" />
         <module name="member" />
+        <module name="gulimall-common" />
         <module name="ware" />
         <module name="renren-fast" />
         <module name="order" />
         <module name="renren-generator" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="8" />
+    <bytecodeTargetLevel target="8">
+      <module name="common" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
