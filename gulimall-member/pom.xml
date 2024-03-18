@@ -7,6 +7,11 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>gulimall-member</name>
     <description>gulimall-member</description>
+    <parent>
+        <groupId>com.atguigu.gulimall</groupId>
+        <artifactId>gulimall</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,6 +60,8 @@
     </dependencyManagement>
 
     <build>
+        <!--限定jar包名-->
+        <finalName>gilimall-member</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -72,7 +79,10 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.atguigu.member.GulimallMemberApplication</mainClass>
+                    <!--有下面的配置打包路径不生效
                     <skip>true</skip>
+                    -->
+                    <outputDirectory>${project.parent.basedir}/deploy/gulimall-member</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
