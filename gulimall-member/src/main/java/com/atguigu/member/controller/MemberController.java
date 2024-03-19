@@ -4,13 +4,12 @@ import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.atguigu.common.utils.Constant;
+import com.atguigu.member.feign.CouponFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.web.bind.annotation.*;
 import com.atguigu.member.entity.MemberEntity;
 import com.atguigu.member.service.MemberService;
 import com.atguigu.common.utils.PageUtils;
@@ -25,12 +24,32 @@ import com.atguigu.common.utils.R;
  * @email Long_Q@outlook.com
  * @date 2024-03-18 13:42:34
  */
+@RefreshScope
 @RestController
 @RequestMapping("member/member")
 public class MemberController {
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private CouponFeignClient couponFeignClient;
 
+    @Value("${member.user.name}")
+    private String name;
+    @Value("${member.user.age}")
+    private String age;
+    @RequestMapping("/properties")
+    public R getProperties(){
+
+        return R.ok().put("name",name).put("age",age);
+    }
+
+    @GetMapping("/coupons")
+    public R getCoupons() {
+        MemberEntity member=new MemberEntity();
+        member.setNickname("张三");
+        R coupons=couponFeignClient.member();
+        return R.ok().put("member",member).put("coupons",coupons.get("coupons"));
+    }
     /**
      * 列表
      */

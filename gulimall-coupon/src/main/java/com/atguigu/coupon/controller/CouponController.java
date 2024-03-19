@@ -1,16 +1,13 @@
 package com.atguigu.coupon.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.atguigu.coupon.entity.CouponEntity;
 import com.atguigu.coupon.service.CouponService;
 import com.atguigu.common.utils.PageUtils;
@@ -30,6 +27,13 @@ import com.atguigu.common.utils.R;
 public class CouponController {
     @Autowired
     private CouponService couponService;
+
+    @GetMapping("/member/list")
+    public R memberCoupons(){
+        CouponEntity coupon=new CouponEntity();
+        coupon.setCouponName("满100减10");
+        return R.ok().put("coupons",Arrays.asList(coupon));
+    }
 
     /**
      * 列表

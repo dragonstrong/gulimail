@@ -12,6 +12,7 @@
         <module name="gulimall-common" />
         <module name="ware" />
         <module name="renren-fast" />
+        <module name="gateway" />
         <module name="order" />
         <module name="renren-generator" />
       </profile>

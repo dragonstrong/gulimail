@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.atguigu.gulimall</groupId>
-    <artifactId>member</artifactId>
+    <groupId>com.atguigu</groupId>
+    <artifactId>gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>gulimall-member</name>
-    <description>gulimall-member</description>
+    <name>gulimall-gateway</name>
+    <description>gulimall-gateway</description>
     <parent>
         <groupId>com.atguigu.gulimall</groupId>
         <artifactId>gulimall</artifactId>
@@ -26,24 +26,13 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <!--openFeign服务间调用-->
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-
-        <!--负载均衡-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
         <dependency>
@@ -73,7 +62,7 @@
 
     <build>
         <!--限定jar包名-->
-        <finalName>gilimall-member</finalName>
+        <finalName>gilimall-gateway</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -90,11 +79,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.atguigu.member.GulimallMemberApplication</mainClass>
-                    <!--有下面的配置打包路径不生效
-                    <skip>true</skip>
-                    -->
-                    <outputDirectory>${project.parent.basedir}/deploy/gulimall-member</outputDirectory>
+                    <mainClass>com.atguigu.gateway.GulimallGatewayApplication</mainClass>
+                    <outputDirectory>${project.parent.basedir}/deploy/gulimall-gateway</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
