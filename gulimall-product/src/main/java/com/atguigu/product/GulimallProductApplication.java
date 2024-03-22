@@ -2,6 +2,7 @@ package com.atguigu.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 /**
  * 1、整合mybatis-plus (参考官方文档 https://baomidou.com/)
  * (1)导入依赖 (在gulimall-common中)
@@ -20,6 +21,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  *
  **/
+@EnableDiscoveryClient
 @MapperScan("com.atguigu.product.dao")
 @SpringBootApplication
 public class GulimallProductApplication {

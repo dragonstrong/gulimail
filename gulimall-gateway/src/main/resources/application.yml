@@ -13,6 +13,15 @@ spring:
           uri: https://www.qq.com/
           predicates:
             - Query=url,qq
+        # 路径重写
+        - id: rewrite-path
+          uri: lb://renren-fast  #路由到renren-fast,必须引入spring-cloud-starter-loadbalancer依赖，否则会报503错误
+          predicates:
+          - Path=/api/**
+          filters:
+          - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment} # /api/**  -> /renren-fast/**
+
+
   application:
     name: gulimall-gateway
 server:

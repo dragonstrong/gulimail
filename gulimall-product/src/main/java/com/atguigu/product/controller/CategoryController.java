@@ -1,9 +1,11 @@
 package com.atguigu.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,17 +33,17 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    /**
-     * 列表
+    /** 23:00-23:40
+     * 查出所有分类以及子分类，并以树形结构组装起来
      */
     @RequestMapping("/list")
     //@RequiresPermissions("product:category:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = categoryService.queryPage(params);
+        //PageUtils page = categoryService.queryPage(params);
+        // return R.ok().put("page", page);
 
-        return R.ok().put("page", page);
+        return R.ok().put("categories", categoryService.getCategoryTree());
     }
-
 
     /**
      * 信息

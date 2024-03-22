@@ -14,6 +14,7 @@ import io.renren.modules.sys.form.SysLoginForm;
 import io.renren.modules.sys.service.SysCaptchaService;
 import io.renren.modules.sys.service.SysUserService;
 import io.renren.modules.sys.service.SysUserTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.util.Map;
  *
  * @author Mark sunlightcs@gmail.com
  */
+@Slf4j
 @RestController
 public class SysLoginController extends AbstractController {
 	@Autowired
@@ -48,9 +50,9 @@ public class SysLoginController extends AbstractController {
 	 */
 	@GetMapping("captcha.jpg")
 	public void captcha(HttpServletResponse response, String uuid)throws IOException {
+		log.info("获取验证码");
 		response.setHeader("Cache-Control", "no-store, no-cache");
 		response.setContentType("image/jpeg");
-
 		//获取图片验证码
 		BufferedImage image = sysCaptchaService.getCaptcha(uuid);
 
