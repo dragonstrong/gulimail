@@ -1,6 +1,7 @@
 package com.atguigu.product.service;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.product.entity.CategoryEntity;
+import com.atguigu.product.vo.Catalog2Vo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -22,5 +23,12 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return: List<CategoryEntity>
      **/
     List<CategoryEntity> getCategoryTree();
+
+    /**
+     * @description: p138 获取二级三级分类数据
+     * @param:
+     * @return: List<Catalog2Vo>>
+     **/
+    Map<String, List<Catalog2Vo>> getCatalogJson();
 }
 
