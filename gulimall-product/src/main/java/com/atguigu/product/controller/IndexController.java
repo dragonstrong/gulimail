@@ -18,8 +18,14 @@ public class IndexController {
 
     @Resource
     private CategoryService categoryService;
+    /**
+     * @description: p138 获取二级三级分类数据
+     * @param:
+     * @return: Map<String,List<Catalog2Vo>>
+     **/
     @GetMapping("/index/catalog.json")
     public Map<String, List<Catalog2Vo>> getCatalogJson(){
-        return categoryService.getCatalogJson();
+        //return categoryService.getCatalogJson();
+        return categoryService.getCatalogJsonUseRedis();
     }
 }

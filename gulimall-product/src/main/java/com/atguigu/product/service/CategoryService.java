@@ -29,6 +29,13 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @param:
      * @return: List<Catalog2Vo>>
      **/
-    Map<String, List<Catalog2Vo>> getCatalogJson();
+    Map<String, List<Catalog2Vo>> getCatalogJsonByDB();
+
+    /**
+     * @description: p138 获取二级三级分类数据 (加入redis)
+     * @param:
+     * @return: List<Catalog2Vo>>
+     **/
+    Map<String, List<Catalog2Vo>> getCatalogJsonUseRedis();
 }
 
