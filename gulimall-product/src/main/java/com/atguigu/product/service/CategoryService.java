@@ -32,10 +32,16 @@ public interface CategoryService extends IService<CategoryEntity> {
     Map<String, List<Catalog2Vo>> getCatalogJsonByDB();
 
     /**
-     * @description: p138 获取二级三级分类数据 (加入redis)
+     * @description: p138 获取二级三级分类数据 (加入redis)  本地锁
      * @param:
      * @return: List<Catalog2Vo>>
      **/
-    Map<String, List<Catalog2Vo>> getCatalogJsonUseRedis();
+    Map<String, List<Catalog2Vo>> getCatalogJsonUseRedisWithLocalLock();
+    /**
+     * @description: p138 获取二级三级分类数据 (加入redis)  分布式锁
+     * @param:
+     * @return: List<Catalog2Vo>>
+     **/
+    Map<String, List<Catalog2Vo>> getCatalogJsonWithLock();
 }
 

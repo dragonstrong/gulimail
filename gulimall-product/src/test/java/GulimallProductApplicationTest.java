@@ -13,10 +13,11 @@ import java.util.List;
  * @Date 2024/03/25
  * @Description
  **/
+
 @Slf4j
 @SpringBootTest(classes = GulimallProductApplication.class )
 public class GulimallProductApplicationTest {
-
+/*
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
     @Test
@@ -30,17 +31,8 @@ public class GulimallProductApplicationTest {
         ops.set("list1",1,"ab");  // 设置下标为1的元素  ["3","ab","1"]
 
         ops.remove("list1",2,"1"); // 移除2个1  -> ["3","ab"]
-
-
-
-
-
-
-
-
-
-
-
     }
+
+ */
 
 }

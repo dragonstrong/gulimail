@@ -1,6 +1,7 @@
 package com.atguigu.product.controller;
 import com.atguigu.product.service.CategoryService;
 import com.atguigu.product.vo.Catalog2Vo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  * @Date 2024/03/25
  * @Description
  **/
-
+@Slf4j
 @RestController
 public class IndexController {
 
@@ -25,7 +26,8 @@ public class IndexController {
      **/
     @GetMapping("/index/catalog.json")
     public Map<String, List<Catalog2Vo>> getCatalogJson(){
-        //return categoryService.getCatalogJson();
-        return categoryService.getCatalogJsonUseRedis();
+        log.info("查询二级三级菜单数据");
+        //return categoryService.getCatalogJsonUseRedisWithLocalLock();
+        return categoryService.getCatalogJsonWithLock();
     }
 }
