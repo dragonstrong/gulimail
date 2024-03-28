@@ -11,10 +11,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -31,6 +33,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private static final String LOCK = "LOCK";
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private RedissonClient redissonClient;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryEntity> page = this.page(
@@ -165,7 +169,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 查数据库
         Map<String, List<Catalog2Vo>> map = null;
         if (catalogJson == null) { // 缓存不命中查数据库
-            map = getCatalogJsonFromDBWithDistributeLock();
+            //map = getCatalogJsonFromDBWithDistributeLock();
+            map=getCatalogJsonFromDBWithRedisson();
             // 写入redis (先转为json String, 方便跨语言和平台，直接写入java数据结构其他语言获取不方便)
             ops.set(CATALOG_JSON, JSON.toJSONString(map));
         } else {
@@ -230,4 +235,40 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // DefaultRedisScript<T> 泛型T为返回值泛型，删成功为1，失败为0
         stringRedisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList(LOCK), uuid);
     }
+
+
+
+    /**
+     * @description: 使用Redisson加分布式锁
+     * @param:
+     * @return: List<Catalog2Vo>>
+     **/
+    public Map<String, List<Catalog2Vo>> getCatalogJsonFromDBWithRedisson() {
+        // 获取一把锁
+        RLock lock=redissonClient.getLock("CatalogJson-Lock");
+        lock.lock(); // 加锁 阻塞式等待  锁住lock()到unlock()间的所有代码
+        log.info("获取分布式锁成功");
+        String catalogJson=stringRedisTemplate.opsForValue().get(CATALOG_JSON);
+        // 拿到锁先判断缓存里有没有，有直接释放锁返回
+        if(catalogJson!=null){
+            log.info("缓存中有二级三级分类数据，直接返回");
+            lock.unlock();  // 释放锁
+            return JSON.parseObject(catalogJson,new TypeReference<Map<String, List<Catalog2Vo>>>(){});
+        }
+        Map<String, List<Catalog2Vo>> map = null;
+        try {
+            map = getCatalogJsonByDB();
+            stringRedisTemplate.opsForValue().set(CATALOG_JSON, JSON.toJSONString(map));
+        } finally { // 无论业务执行成功或失败，都要解锁
+            lock.unlock();  // 释放锁
+            return map;
+        }
+    }
+
+
+
+
+
+
+
 }

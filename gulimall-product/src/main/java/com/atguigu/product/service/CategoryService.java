@@ -43,5 +43,11 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return: List<Catalog2Vo>>
      **/
     Map<String, List<Catalog2Vo>> getCatalogJsonWithLock();
+    /**
+     * @description: 使用Redisson加分布式锁
+     * @param:
+     * @return: List<Catalog2Vo>>
+     **/
+    public Map<String, List<Catalog2Vo>> getCatalogJsonFromDBWithRedisson() throws InterruptedException;
 }
 
