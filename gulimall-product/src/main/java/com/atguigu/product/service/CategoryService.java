@@ -32,6 +32,13 @@ public interface CategoryService extends IService<CategoryEntity> {
     Map<String, List<Catalog2Vo>> getCatalogJsonByDB();
 
     /**
+     * @description: p138 获取二级三级分类数据 加上SpringCache 缓存注解
+     * @param:
+     * @return: List<Catalog2Vo>>
+     **/
+    Map<String, List<Catalog2Vo>> getCatalogJsonByDBUseSpringCache();
+
+    /**
      * @description: p138 获取二级三级分类数据 (加入redis)  本地锁
      * @param:
      * @return: List<Catalog2Vo>>
@@ -48,6 +55,13 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @param:
      * @return: List<Catalog2Vo>>
      **/
-    public Map<String, List<Catalog2Vo>> getCatalogJsonFromDBWithRedisson() throws InterruptedException;
+     Map<String, List<Catalog2Vo>> getCatalogJsonFromDBWithRedisson() throws InterruptedException;
+     /**
+      * @description: 更新菜单数据
+      * @param:
+      * @param category
+      * @return: java.lang.String
+      **/
+    String updateCategory(CategoryEntity category);
 }
 

@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -121,6 +124,67 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
         return map;
     }
+
+
+    /**
+     * @description: 加入SpringCache缓存注解
+     * @Cacheable： 代表当前的结果需要缓存，如果缓存中有，方法不用调用，否则调用方法并将方法的结果放入缓存。{"getCatalogJsonByDBUseSpringCache"}指定缓存分区，是一个数组，可以放在多个分区
+     * 自定义：
+     * 1）指定key: key属性执行，接受一个SpEL,固定值加单引号。#root.methodName表示取方法名作为key。
+     * SpEL表达式参考：https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html
+     * 2)指定过期时间：配置文件中 spring.cache.redis.time-to-live, 单位ms
+     * 3）将数据保存为json格式： 默认使用jdk序列化。将数据保存为json格式涉及自定义缓存管理器。
+     *
+     * 自定义缓存管理器原理：
+     * CacheAutoConfiguration ->导入RedisCacheConfiguration ->自动配置了RedisCacheManager -> 初始化所有的缓存 ->每个缓存决定使用什么配置
+     * -> 如果RedisCacheConfiguration有就用已有的，没有就用默认配置
+     * -> 想改缓存配置，只需给容器中放一个RedisCacheConfiguration即可
+     * -> 就会应用到当前RedisCacheManager管理的所有缓存分区中。
+     *
+     * 指定序列化方式： keySerializationPair  valueSerializationPair
+     **/
+    @Cacheable(value = {"product"},key="#root.methodName")
+    @Override
+    public Map<String, List<Catalog2Vo>> getCatalogJsonByDBUseSpringCache() {
+        log.info("查询了数据库");
+        Map<String, List<Catalog2Vo>> map = null;  // 结果
+        // 找一级分类
+        List<CategoryEntity> categoryEntityList = getBaseMapper().selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
+        if (categoryEntityList != null)
+        {
+            // 对每一个一级分类找二级分类
+            // 封装成map   key=一级分类的catId  value=List<Catalog2Vo>
+            map = categoryEntityList.stream().collect(Collectors.toMap(k -> {
+                return k.getCatId().toString();
+            }, v -> {
+                // 找v的二级分类列表
+                List<Catalog2Vo> catalog2VoList = null;
+                List<CategoryEntity> category2Entities = getBaseMapper().selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+                if (category2Entities != null)
+                {
+                    // 将category2Entities封装成List<Catalog2Vo>
+                    // 先找3级子分类列表
+                    catalog2VoList = category2Entities.stream().map(l2 -> {
+                        List<CategoryEntity> category3Entities = getBaseMapper().selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                        List<Catalog2Vo.Category3Vo> category3VoList = null;
+                        if (category3Entities != null)
+                        {
+                            category3VoList = category3Entities.stream().map(l3 -> {
+                                Catalog2Vo.Category3Vo catalog3Vo = new Catalog2Vo.Category3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName());
+                                return catalog3Vo;
+                            }).collect(Collectors.toList());
+                        }
+                        Catalog2Vo catalog2Vo = new Catalog2Vo(l2.getParentCid().toString(), category3VoList, l2.getCatId().toString(), l2.getName());
+                        return catalog2Vo;
+                    }).collect(Collectors.toList());
+                }
+                return catalog2VoList;
+            }));
+        }
+        return map;
+    }
+
+
     /**
      * @description: p138 二级三级分类数据(使用redis)
      * @param:
@@ -264,11 +328,39 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return map;
         }
     }
+    /**
+     * @description: 删除缓存注解（执行方法就删除相关缓存）
+     * @param:
+     * @param category
+     * @return: java.lang.String
+     **/
+    @CacheEvict(value = {"product"},key="'getCatalogJsonByDBUseSpringCache'")
+    @Override
+    public String updateCategory(CategoryEntity category) {
+        return getBaseMapper().updateById(category)>0?"success":"fail";
+    }
+    /**
+     * @description: 删除某一分区下的所有缓存
+     * @param:
+     * @param category
+     * @return: java.lang.String
+     **/
+    @CacheEvict(value = {"product"},allEntries = true)
+    public String updateCategory1(CategoryEntity category) {
+        return getBaseMapper().updateById(category)>0?"success":"fail";
+    }
 
-
-
-
-
-
-
+    /**
+     * @description:  @Caching组合多种缓存操作
+     * @param:
+     * @param category
+     * @return: java.lang.String
+     **/
+    @Caching(evict = {
+            @CacheEvict(value = {"product"},key="'getCatalogJsonByDBUseSpringCache'"),
+            @CacheEvict(value = {"product"},key="'getCatalogJsonByDBUseSpringCache123'"),
+    })
+    public String updateCategory2(CategoryEntity category) {
+        return getBaseMapper().updateById(category)>0?"success":"fail";
+    }
 }

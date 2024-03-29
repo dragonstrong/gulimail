@@ -1,13 +1,12 @@
 package com.atguigu.product.controller;
+import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryService;
 import com.atguigu.product.vo.Catalog2Vo;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -40,6 +39,23 @@ public class IndexController {
         //log.info("查询二级三级菜单数据");
         //return categoryService.getCatalogJsonUseRedisWithLocalLock();
         return categoryService.getCatalogJsonWithLock();
+    }
+
+
+    @PostMapping("/update/category")
+    public String updateCategory(@RequestBody CategoryEntity category){
+        return categoryService.updateCategory(category);
+    }
+
+    /**
+     * @description: 使用SpringCache缓存注解
+     * @param:
+     * @return: Map<List<Catalog2Vo>>
+     **/
+    @GetMapping("/index/springcache/catalog.json")
+    public Map<String, List<Catalog2Vo>> getCatalogJsonUseSpringCache(){
+        log.info("获取二级三级菜单数据");
+        return categoryService.getCatalogJsonByDBUseSpringCache();
     }
 
     // 1.可重入锁 （不设过期时间）
