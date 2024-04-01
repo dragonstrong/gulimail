@@ -1,4 +1,5 @@
 package com.atguigu.product.controller;
+import com.alibaba.fastjson.JSON;
 import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryService;
 import com.atguigu.product.vo.Catalog2Vo;
@@ -12,6 +13,9 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 /**
  * @Author qiang.long
@@ -29,6 +33,8 @@ public class IndexController {
     private RedissonClient redissonClient;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private ThreadPoolExecutor threadPoolExecutor;
     /**
      * @description: p138 获取二级三级分类数据
      * @param:
@@ -187,5 +193,33 @@ public class IndexController {
         return id+"班的人都走了";
     }
 
+    /**
+     * @description: 线程池+CompletableFuture多任务组合测试
+     **/
+    @GetMapping("/threadPool/test")
+    public String testPool () throws ExecutionException, InterruptedException {
+        log.info("线程池参数：{}", JSON.toJSONString(threadPoolExecutor));
+        log.info("main....start");
+        // CompletableFuture的泛型以最后一步的返回值为准
+        // 任务1
+        CompletableFuture<String> completableFuture1=CompletableFuture.supplyAsync(()->{
+            log.info("查询商品图片信息");
+            return "hello.jpg";},threadPoolExecutor);
+        // 任务2
+        CompletableFuture<String> completableFuture2=CompletableFuture.supplyAsync(()->{
+            log.info("查询商品图片属性");
+            return "黑丝+256G";},threadPoolExecutor);
+        // 任务3
+        CompletableFuture<String> completableFuture3=CompletableFuture.supplyAsync(()->{
+            log.info("查询商品介绍");
+            return "华为";},threadPoolExecutor);
+
+        // 组合
+        CompletableFuture<Void> all= CompletableFuture.allOf(completableFuture1,completableFuture2,completableFuture3);
+        all.get();   // 等待所有结果完成
+        // 打印所有任务的执行结果
+        log.info("tash1:{},task2:{},tash3:{}",completableFuture1.get(),completableFuture2.get(),completableFuture3.get());
+        return "ok";
+    }
 
 }
