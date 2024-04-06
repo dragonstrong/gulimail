@@ -1,6 +1,5 @@
 package com.atguigu.product.config;
 import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
@@ -17,7 +16,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  *
  * @EnableConfigurationProperties 绑定配置文件
  **/
-
 @EnableConfigurationProperties(CacheProperties.class)
 @EnableCaching
 @Configuration

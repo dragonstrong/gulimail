@@ -1,9 +1,6 @@
 package com.atguigu.product.thread;
-import com.atguigu.product.config.ThreadConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.util.concurrent.*;
 /**
  * @Author qiang.long

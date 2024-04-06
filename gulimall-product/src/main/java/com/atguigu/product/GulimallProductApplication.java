@@ -2,7 +2,6 @@ package com.atguigu.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 /**
  * 1、整合mybatis-plus (参考官方文档 https://baomidou.com/)

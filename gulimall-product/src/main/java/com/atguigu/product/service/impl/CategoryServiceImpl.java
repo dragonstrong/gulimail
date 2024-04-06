@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 @Slf4j
@@ -364,4 +363,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public String updateCategory2(CategoryEntity category) {
         return getBaseMapper().updateById(category)>0?"success":"fail";
     }
+
+    // 19:03
+
 }

@@ -1,12 +1,10 @@
 package com.atguigu.product.thread;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 /**
  * @Author qiang.long
  * @Date 2024/04/01
