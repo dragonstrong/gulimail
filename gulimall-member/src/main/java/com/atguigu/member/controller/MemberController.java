@@ -1,22 +1,25 @@
 package com.atguigu.member.controller;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.atguigu.common.utils.Constant;
+import com.atguigu.member.enums.ServiceInvocationEnum;
 import com.atguigu.member.feign.CouponFeignClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.atguigu.member.entity.MemberEntity;
 import com.atguigu.member.service.MemberService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
-
-
-
+import org.springframework.web.client.RestTemplate;
 /**
  * 会员
  *
@@ -24,6 +27,7 @@ import com.atguigu.common.utils.R;
  * @email Long_Q@outlook.com
  * @date 2024-03-18 13:42:34
  */
+@Slf4j
 @RefreshScope
 @RestController
 @RequestMapping("member/member")
@@ -32,6 +36,8 @@ public class MemberController {
     private MemberService memberService;
     @Autowired
     private CouponFeignClient couponFeignClient;
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${member.user.name}")
     private String name;
@@ -42,13 +48,29 @@ public class MemberController {
 
         return R.ok().put("name",name).put("age",age);
     }
+    /**
+     * @description: 服务间调用
+     * @param:
+     * @param mode 0：OpenFeign  1：RestTemplate
+     * @return: com.atguigu.common.utils.R
+     **/
 
     @GetMapping("/coupons")
-    public R getCoupons() {
+    public R getCoupons(Integer mode) {
         MemberEntity member=new MemberEntity();
         member.setNickname("张三");
-        R coupons=couponFeignClient.member();
-        return R.ok().put("member",member).put("coupons",coupons.get("coupons"));
+        if(mode== ServiceInvocationEnum.OPENFEIGN.ordinal()){ // OpenFeign
+            log.info("使用OpenFeign进行服务调用");
+            R coupons=couponFeignClient.member();
+            return R.ok().put("member",member).put("coupons",coupons.get("coupons"));
+        }else if(mode== ServiceInvocationEnum.RESTTEMPLATE.ordinal()){  // RestTemplate
+            log.info("使用RestTemplate进行服务调用");
+            ResponseEntity<R> r=restTemplate.exchange("http://localhost:7000/coupon/coupon/member/list", HttpMethod.GET,null,R.class);
+            return R.ok().put("member",member).put("coupons",r.getBody().get("coupons"));
+        }else {
+            log.info("不支持的服务调用方式，mode={}",mode);
+            return R.error();
+        }
     }
     /**
      * 列表

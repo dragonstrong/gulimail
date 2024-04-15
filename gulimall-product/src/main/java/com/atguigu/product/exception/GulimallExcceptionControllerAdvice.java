@@ -15,7 +15,7 @@ import java.util.Map;
  * @Description
  **/
 @Slf4j
-@RestControllerAdvice(basePackages = "com.atguigu.product.controller")
+@RestControllerAdvice
 public class GulimallExcceptionControllerAdvice {
     /**
      * @description: 处理数据校验异常

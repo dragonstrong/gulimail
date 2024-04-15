@@ -9,8 +9,12 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          enabled: false  #不从配置中心加载
   application:
     name: gulimall-coupon
+
 
 # 配置mysql  .xml文件路径
 mybatis-plus:
