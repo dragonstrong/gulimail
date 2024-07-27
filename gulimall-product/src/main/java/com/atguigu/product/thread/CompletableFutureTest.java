@@ -1,10 +1,9 @@
 package com.atguigu.product.thread;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
+import java.util.concurrent.*;
 /**
  * @Author qiang.long
  * @Date 2024/04/01
@@ -185,7 +184,7 @@ public class CompletableFutureTest {
         // 任务2
         CompletableFuture<String> completableFuture2=CompletableFuture.supplyAsync(()->{
             log.info("查询商品图片属性");
-            return "黑丝+256G";},service);
+            return "黑色+256G";},service);
         // 任务3
         CompletableFuture<String> completableFuture3=CompletableFuture.supplyAsync(()->{
             log.info("查询商品介绍");

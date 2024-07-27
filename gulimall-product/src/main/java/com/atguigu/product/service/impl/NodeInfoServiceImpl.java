@@ -7,15 +7,13 @@ import com.atguigu.product.service.NodeInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 /**
  * @Author qiang.long
@@ -34,7 +32,7 @@ public class NodeInfoServiceImpl extends ServiceImpl<NodeInfoDao, NodeInfo> impl
     private static final String NVIDIA_NODE="nvidia";
     private static final String DCU_NODE="dcu";
 
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "0 0/3 * * * *")
     public void sync(){
         log.info("---sync cache---");
         List<NodeInfo> nodeInfoList=getBaseMapper().selectList(null);
