@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.UUID;
 /**
- * @Author qiang.long
+ * @Author qiang.long.
  * @Date 2024/07/18
  * @Description RabbitMQ测试
  **/

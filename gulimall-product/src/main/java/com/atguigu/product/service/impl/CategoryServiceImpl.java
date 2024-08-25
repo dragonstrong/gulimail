@@ -343,6 +343,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public String updateCategory(CategoryEntity category) {
         return getBaseMapper().updateById(category)>0?"success":"fail";
     }
+    @Override
+    public void removeMenuByIds(List<Long> asList) {
+        // TODO 检查删除菜单是否被引用
+        // 逻辑删除
+        baseMapper.deleteBatchIds(asList);
+    }
     /**
      * @description: 删除某一分区下的所有缓存
      * @param:

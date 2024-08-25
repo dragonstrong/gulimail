@@ -8,7 +8,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.1.4:8848  # 127.0.0.1
+        server-addr: 127.0.0.1:8848  # 127.0.0.1
   # redis
   redis:
     host: 192.168.30.128
@@ -49,9 +49,14 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+      logic-delete-value: 1 # 配置全局逻辑删除规则
+      logic-not-delete-value: 0
 #服务端口
 server:
   port: 10000
+logging:
+  level:
+    com.atguigu.gulimall: debug
 
 
 #线程池参数
