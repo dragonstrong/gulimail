@@ -32,7 +32,7 @@ public class CategoryController {
         //PageUtils page = categoryService.queryPage(params);
         // return R.ok().put("page", page);
 
-        return R.ok().put("categories", categoryService.getCategoryTree());
+        return R.ok().put("data", categoryService.getCategoryTree());
     }
 
     /**

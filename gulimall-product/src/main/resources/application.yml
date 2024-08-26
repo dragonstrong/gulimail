@@ -39,6 +39,11 @@ spring:
       simple:
         acknowledge-mode: manual # 消费者开启消息手动确认模式
 
+alibaba:
+  oss:
+    endpoint: https://oss-cn-shanghai.aliyuncs.com #Endpoint按实际Region填写。
+    accessKeyId: LTAI5tFTTUWqBbq8F9zzvhVb  #OSS_ACCESS_KEY_ID
+    accessKeySecret: 9EvG2ZhCor8ZutCWrccFzJLDtaxDtU #OSS_ACCESS_KEY_SECRET
 
 
 

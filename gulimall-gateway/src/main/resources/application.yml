@@ -22,9 +22,17 @@ spring:
           filters:
             - RewritePath=/api/product/?(?<segment>.*), /product/$\{segment} # /api/**  -> gulimall-product模块  /**
 
+        # 负载均衡到gulimall-third-party
+        - id: to-third-party
+          uri: lb://gulimall-third-party  #路由到gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/?(?<segment>.*), /third-party/$\{segment} # /api/**  -> gulimall-third-party模块  /**
+
         # 路径重写
         - id: to-renren-fast
-          uri: lb://renren-fast  #路由到renren-fast,必须引入spring-cloud-starter-loadbalancer依赖，否则会报503错误
+          uri: lb://renren-fast  #路由到renren-fast
           predicates:
             - Path=/api/**
           filters:

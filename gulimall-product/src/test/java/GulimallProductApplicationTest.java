@@ -1,9 +1,7 @@
 import com.atguigu.product.GulimallProductApplication;
 import com.atguigu.product.entity.CategoryEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +18,6 @@ public class GulimallProductApplicationTest {
     AmqpAdmin amqpAdmin;
     @Autowired
     RabbitTemplate rabbitTemplate;
-
     /**
      * @description:创建交换机
      */
