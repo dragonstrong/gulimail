@@ -22,5 +22,24 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
         return new PageUtils(page);
     }
-
+    @Override
+    public PageUtils MyQueryPage(Map<String, Object> params, Long catelogId) {
+        QueryWrapper<AttrGroupEntity> queryWrapper=new QueryWrapper<AttrGroupEntity>();
+        if(catelogId!=0){ // 查询所有属性（数据库中没有catelogId为0的）
+            queryWrapper.eq("catelog_id",catelogId);
+        }
+        if(params.get("key")!=null){
+            String key=(String) params.get("key"); // 检索关键字
+            if(!key.equals("")){
+                queryWrapper.and((obj)->{
+                    obj.eq("attr_group_id",key).or().like("attr_group_name",key);
+                });
+            }
+        }
+        IPage<AttrGroupEntity> page = this.page(
+                new Query<AttrGroupEntity>().getPage(params), // 分页条件
+                queryWrapper // 查询条件
+        );
+        return new PageUtils(page);
+    }
 }

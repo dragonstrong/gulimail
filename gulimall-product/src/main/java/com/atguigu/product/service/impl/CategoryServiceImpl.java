@@ -3,6 +3,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.Query;
+import com.atguigu.product.dao.CategoryBrandRelationDao;
 import com.atguigu.product.dao.CategoryDao;
 import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryService;
@@ -10,13 +11,9 @@ import com.atguigu.product.vo.Catalog2Vo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,12 +22,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 @Slf4j
@@ -42,6 +37,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    CategoryBrandRelationDao categoryBrandRelationDao;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryEntity> page = this.page(
@@ -375,5 +372,29 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     // 19:03
-
+    /**
+     * @description: 由第三级分类ID找到完整路径[父->子->孙]，如[2->35->225]
+     * @param:
+     * @param thirdCatalogId
+     * @return: java.util.List<java.lang.Long>
+     **/
+    @Override
+    public List<Long> finCatalogPath(Long thirdCatalogId) throws Exception {
+        List<Long> path=new ArrayList<>();
+        Long parentId=thirdCatalogId;
+        while(parentId!=0){
+            path.add(0,parentId);
+            parentId=Optional.ofNullable(getBaseMapper().selectOne(new QueryWrapper<CategoryEntity>().eq("cat_id",parentId))).map(CategoryEntity::getParentCid).orElseThrow(()->new Exception("数据库中无cat_id=:"+thirdCatalogId+"的数据"));
+        }
+        return path;
+    }
+    /**
+     * @description: 做成事务
+     **/
+    @Transactional
+    @Override
+    public void updateDetail(CategoryEntity categoryEntity) {
+        updateById(categoryEntity);
+        categoryBrandRelationDao.updateCategoryName(categoryEntity);
+    }
 }

@@ -1,7 +1,9 @@
 package com.atguigu.product.controller;
+import com.alibaba.fastjson.JSON;
 import com.atguigu.common.utils.R;
 import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ import java.util.Map;
  * @email Long_Q@outlook.com
  * @date 2024-03-18 11:32:43
  */
+@Slf4j
 @RestController
 @RequestMapping("product/category")
 public class CategoryController {
@@ -43,7 +46,7 @@ public class CategoryController {
     public R info(@PathVariable("catId") Long catId){
 		CategoryEntity category = categoryService.getById(catId);
 
-        return R.ok().put("category", category);
+        return R.ok().put("data", category);
     }
 
     /**
@@ -63,7 +66,8 @@ public class CategoryController {
     @RequestMapping("/update")
     //@RequiresPermissions("product:category:update")
     public R update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
+        log.info("更新分类信息:{}", JSON.toJSONString(category));
+		categoryService.updateDetail(category);
         return R.ok();
     }
     /**

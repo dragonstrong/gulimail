@@ -17,5 +17,8 @@
         <result property="showDesc" column="show_desc"/>
     </resultMap>
 
-
+    <insert id="insertReturnId" parameterType="com.atguigu.product.entity.AttrEntity" useGeneratedKeys="true" keyProperty="attrId">
+        insert into pms_attr(attr_name,search_type,value_type,icon,value_select,attr_type,enable,catelog_id,show_desc)
+        values(#{attrEntity.attrName},#{attrEntity.searchType},#{attrEntity.valueType},#{attrEntity.icon},#{attrEntity.valueSelect},#{attrEntity.attrType},#{attrEntity.enable},#{attrEntity.catelogId},#{attrEntity.showDesc})
+    </insert>
 </mapper>

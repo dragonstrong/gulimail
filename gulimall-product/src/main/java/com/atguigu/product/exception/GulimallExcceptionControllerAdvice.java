@@ -1,4 +1,5 @@
 package com.atguigu.product.exception;
+import com.alibaba.fastjson.JSON;
 import com.atguigu.common.exception.BizCodeEnum;
 import com.atguigu.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class GulimallExcceptionControllerAdvice {
      **/
     @ExceptionHandler(value = Throwable.class)
     public R handelException(Throwable e){
-        log.error("出现异常:{},异常类型:{}",e.getMessage(),e.getClass());
+        log.error("出现异常:{},异常类型:{},异常堆栈:{}",e.getMessage(),e.getClass(), JSON.toJSON(e.getStackTrace()));
         return R.error(BizCodeEnum.UNKNOW_EXCEPTION.getCode(), BizCodeEnum.UNKNOW_EXCEPTION.getMsg());
 
     }

@@ -2,11 +2,13 @@ package com.atguigu.product.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.product.entity.CategoryBrandRelationEntity;
+import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryBrandRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -23,6 +25,15 @@ import java.util.Map;
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    /**
+     * 获取品牌厂商关联的分类列表
+     */
+    @GetMapping("/catelog/list")
+    public R list(@RequestParam String brandId){
+        List<CategoryBrandRelationEntity> categoryBrandRelationEntities = categoryBrandRelationService.getCategoryBrandRelationByBrand(brandId);
+        return R.ok().put("data", categoryBrandRelationEntities);
+    }
 
     /**
      * 列表
@@ -53,8 +64,7 @@ public class CategoryBrandRelationController {
     @RequestMapping("/save")
     //@RequiresPermissions("product:categorybrandrelation:save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
-
+		categoryBrandRelationService.saveDetail(categoryBrandRelation);
         return R.ok();
     }
 

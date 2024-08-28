@@ -21,5 +21,12 @@ public interface BrandService extends IService<BrandEntity> {
      * @return: com.atguigu.common.utils.PageUtils
      **/
     PageUtils queryPage(Map<String, Object> params);
+    /**
+     * @description: 更新品牌，若有关联分类，同时更新CategoryBrandRelationEntity表
+     * @param:
+     * @param brand
+     * @return: void
+     **/
+    void UpdateDetail(BrandEntity brand);
 }
 

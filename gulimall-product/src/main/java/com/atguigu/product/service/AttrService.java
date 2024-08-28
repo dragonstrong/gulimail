@@ -1,7 +1,10 @@
 package com.atguigu.product.service;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.product.entity.AttrEntity;
+import com.atguigu.product.vo.AttrRespVo;
+import com.atguigu.product.vo.AttrVo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -15,5 +18,10 @@ import java.util.Map;
 public interface AttrService extends IService<AttrEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+    void saveAttr(AttrVo attrVo);
+    PageUtils queryAttrPage(Long catelogId, String attrType,Map<String, Object> params);
+    AttrRespVo getAttrInfo(Long attrId) throws Exception;
+    void updateAttr(AttrVo attrVo);
+    void deleteByIds(Long[] attrIds);
 }
 

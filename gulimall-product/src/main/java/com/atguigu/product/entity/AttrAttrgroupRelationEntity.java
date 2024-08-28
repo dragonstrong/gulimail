@@ -2,6 +2,7 @@ package com.atguigu.product.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * @email Long_Q@outlook.com
  * @date 2024-03-17 23:41:04
  */
+@Accessors(chain = true)
 @Data
 @TableName("pms_attr_attrgroup_relation")
 public class AttrAttrgroupRelationEntity implements Serializable {

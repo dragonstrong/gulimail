@@ -61,7 +61,7 @@ server:
   port: 10000
 logging:
   level:
-    com.atguigu.gulimall: debug
+    com.atguigu.product: debug
 
 
 #线程池参数

@@ -65,5 +65,7 @@ public interface CategoryService extends IService<CategoryEntity> {
       **/
     String updateCategory(CategoryEntity category);
     void removeMenuByIds(List<Long> asList);
+    List<Long> finCatalogPath(Long thirdCatalogId) throws Exception;
+    void updateDetail(CategoryEntity categoryEntity);
 }
 
