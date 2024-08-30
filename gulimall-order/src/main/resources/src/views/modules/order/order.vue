@@ -301,8 +301,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './order-add-or-update'
-  export default {
+import AddOrUpdate from './order-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

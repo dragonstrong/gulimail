@@ -3,6 +3,7 @@ import com.atguigu.common.utils.PageUtils;
 import com.atguigu.product.entity.SpuImagesEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,5 +16,9 @@ import java.util.Map;
 public interface SpuImagesService extends IService<SpuImagesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+    /**
+     * @description: 保存spu图片集
+     **/
+    void saveImages(Long id, List<String> images);
 }
 

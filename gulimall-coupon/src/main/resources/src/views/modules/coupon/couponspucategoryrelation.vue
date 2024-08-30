@@ -73,8 +73,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './couponspucategoryrelation-add-or-update'
-  export default {
+import AddOrUpdate from './couponspucategoryrelation-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

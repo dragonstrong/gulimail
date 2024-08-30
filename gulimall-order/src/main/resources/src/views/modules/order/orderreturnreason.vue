@@ -79,8 +79,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './orderreturnreason-add-or-update'
-  export default {
+import AddOrUpdate from './orderreturnreason-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

@@ -97,8 +97,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './mqmessage-add-or-update'
-  export default {
+import AddOrUpdate from './mqmessage-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

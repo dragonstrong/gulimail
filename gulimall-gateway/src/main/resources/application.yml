@@ -20,7 +20,15 @@ spring:
           predicates:
             - Path=/api/product/**
           filters:
-            - RewritePath=/api/product/?(?<segment>.*), /product/$\{segment} # /api/**  -> gulimall-product模块  /**
+            - RewritePath=/api/product/?(?<segment>.*), /product/$\{segment} # /api/product/**  -> gulimall-product模块  /product/**
+
+        # 负载均衡到gulimall-member
+        - id: to-member
+          uri: lb://gulimall-member
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/member/?(?<segment>.*), /member/$\{segment}
 
         # 负载均衡到gulimall-third-party
         - id: to-third-party
@@ -28,9 +36,9 @@ spring:
           predicates:
             - Path=/api/thirdparty/**
           filters:
-            - RewritePath=/api/thirdparty/?(?<segment>.*), /third-party/$\{segment} # /api/**  -> gulimall-third-party模块  /**
+            - RewritePath=/api/thirdparty/?(?<segment>.*), /third-party/$\{segment}
 
-        # 路径重写
+        # 到renren-fast
         - id: to-renren-fast
           uri: lb://renren-fast  #路由到renren-fast
           predicates:

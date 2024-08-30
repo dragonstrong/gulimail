@@ -3,6 +3,7 @@ import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.product.entity.SpuInfoEntity;
 import com.atguigu.product.service.SpuInfoService;
+import com.atguigu.product.vo.SpuSaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,12 +49,11 @@ public class SpuInfoController {
     }
 
     /**
-     * 保存
+     * 保存发布的商品信息
      */
-    @RequestMapping("/save")
-    //@RequiresPermissions("product:spuinfo:save")
-    public R save(@RequestBody SpuInfoEntity spuInfo){
-		spuInfoService.save(spuInfo);
+    @PostMapping("/save")
+    public R save(@RequestBody SpuSaveVo spuSaveVo){
+		spuInfoService.saveSpuInfo(spuSaveVo);
 
         return R.ok();
     }

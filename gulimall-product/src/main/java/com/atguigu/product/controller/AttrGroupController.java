@@ -9,6 +9,7 @@ import com.atguigu.product.service.AttrGroupService;
 import com.atguigu.product.service.AttrService;
 import com.atguigu.product.service.CategoryService;
 import com.atguigu.product.vo.AttrAttrGroupRelationVo;
+import com.atguigu.product.vo.AttrgroupWithAttrs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -116,6 +117,18 @@ public class AttrGroupController {
     public R getNoRelationAttrs(@PathVariable("attrgroupId") Long attrgroupId,@RequestParam Map<String, Object> params) throws Exception {
         PageUtils pageUtils=attrService.getNoRelationAttrs(attrgroupId,params);
         return R.ok().put("page",pageUtils);
+    }
+    /**
+     * @description: 获取分类下所有分组&关联属性
+     * @param:
+     * @param catelogId
+     * @return: com.atguigu.common.utils.R
+     **/
+    @GetMapping("/{catelogId}/withattr")
+    public R getAttrgroupWithAttrs(@PathVariable("catelogId") Long catelogId){
+        log.info("获取分类下所有分组&关联属性,catelogId={}",catelogId);
+        List<AttrgroupWithAttrs> attrgroupWithAttrs =attrGroupService.getGroupsAndAttrsByCatId(catelogId);
+        return R.ok().put("data",attrgroupWithAttrs);
     }
 
     /**

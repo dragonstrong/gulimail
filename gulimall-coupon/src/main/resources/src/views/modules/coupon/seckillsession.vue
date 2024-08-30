@@ -85,8 +85,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './seckillsession-add-or-update'
-  export default {
+import AddOrUpdate from './seckillsession-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

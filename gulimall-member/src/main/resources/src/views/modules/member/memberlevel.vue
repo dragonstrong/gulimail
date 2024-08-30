@@ -109,8 +109,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './memberlevel-add-or-update'
-  export default {
+import AddOrUpdate from './memberlevel-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

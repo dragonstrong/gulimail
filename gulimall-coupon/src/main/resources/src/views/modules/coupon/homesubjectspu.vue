@@ -79,8 +79,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './homesubjectspu-add-or-update'
-  export default {
+import AddOrUpdate from './homesubjectspu-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

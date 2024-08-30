@@ -79,8 +79,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './spubounds-add-or-update'
-  export default {
+import AddOrUpdate from './spubounds-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

@@ -115,8 +115,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './memberreceiveaddress-add-or-update'
-  export default {
+import AddOrUpdate from './memberreceiveaddress-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

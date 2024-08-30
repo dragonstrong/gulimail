@@ -139,8 +139,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './memberstatisticsinfo-add-or-update'
-  export default {
+import AddOrUpdate from './memberstatisticsinfo-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

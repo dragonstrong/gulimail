@@ -91,8 +91,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './seckillskunotice-add-or-update'
-  export default {
+import AddOrUpdate from './seckillskunotice-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

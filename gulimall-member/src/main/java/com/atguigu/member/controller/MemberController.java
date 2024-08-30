@@ -1,13 +1,10 @@
 package com.atguigu.member.controller;
-
-import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.Map;
-
-//import org.apache.shiro.authz.annotation.RequiresPermissions;
-import com.atguigu.common.utils.Constant;
+import com.atguigu.common.utils.PageUtils;
+import com.atguigu.common.utils.R;
+import com.atguigu.member.entity.MemberEntity;
 import com.atguigu.member.enums.ServiceInvocationEnum;
 import com.atguigu.member.feign.CouponFeignClient;
+import com.atguigu.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,11 +12,10 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.atguigu.member.entity.MemberEntity;
-import com.atguigu.member.service.MemberService;
-import com.atguigu.common.utils.PageUtils;
-import com.atguigu.common.utils.R;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.Map;
 /**
  * 会员
  *

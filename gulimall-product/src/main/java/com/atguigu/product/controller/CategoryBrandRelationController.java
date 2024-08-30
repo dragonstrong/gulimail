@@ -3,6 +3,8 @@ import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.product.entity.CategoryBrandRelationEntity;
 import com.atguigu.product.service.CategoryBrandRelationService;
+import com.atguigu.product.vo.BrandVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,7 @@ import java.util.Map;
  * @email Long_Q@outlook.com
  * @date 2024-03-18 11:32:43
  */
+@Slf4j
 @RestController
 @RequestMapping("product/categorybrandrelation")
 public class CategoryBrandRelationController {
@@ -29,11 +32,20 @@ public class CategoryBrandRelationController {
      * 获取品牌厂商关联的分类列表
      */
     @GetMapping("/catelog/list")
-    public R list(@RequestParam String brandId){
+    public R getCategoryBrandRelationByBrand(@RequestParam String brandId){
         List<CategoryBrandRelationEntity> categoryBrandRelationEntities = categoryBrandRelationService.getCategoryBrandRelationByBrand(brandId);
         return R.ok().put("data", categoryBrandRelationEntities);
     }
 
+    /**
+     * 获取分类下的所有品牌厂商
+     */
+    @GetMapping("/brands/list")
+    public R getBrandsByCatId(@RequestParam(value = "catId",required = true) Long catId){
+        log.info("查询catId={}分类下的所有所有品牌");
+        List<BrandVo> categoryBrandRelationEntities = categoryBrandRelationService.getBrandsByCatId(catId);
+        return R.ok().put("data", categoryBrandRelationEntities);
+    }
     /**
      * 列表
      */

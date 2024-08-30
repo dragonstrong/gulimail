@@ -85,8 +85,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './memberloginlog-add-or-update'
-  export default {
+import AddOrUpdate from './memberloginlog-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

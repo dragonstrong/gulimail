@@ -1,8 +1,10 @@
 package com.atguigu.product.service;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.product.entity.AttrGroupEntity;
+import com.atguigu.product.vo.AttrgroupWithAttrs;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +18,9 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
     PageUtils MyQueryPage(Map<String, Object> params,Long catelogId);
+    /**
+     * @description: 根据三级分类ID查出所有属性分组及该分组下的所有属性
+     **/
+    List<AttrgroupWithAttrs> getGroupsAndAttrsByCatId(Long catelogId);
 }
 

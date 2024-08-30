@@ -133,8 +133,9 @@
 </template>
 
 <script>
-  import AddOrUpdate from './wareordertask-add-or-update'
-  export default {
+import AddOrUpdate from './wareordertask-add-or-update'
+
+export default {
     data () {
       return {
         dataForm: {

@@ -163,7 +163,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         // 排除已关联的属性id
         QueryWrapper<AttrEntity> queryWrapper=new QueryWrapper<AttrEntity>().eq("catelog_id",catelogId);
         if(!usedAttrIds.isEmpty()){
-            queryWrapper.notIn("attr_id",usedAttrIds);
+            queryWrapper.notIn("attr_id",usedAttrIds).eq("attr_type",AttrTypeEnum.BASE_TYPE.getCode());// 只能关联基本属性（排除销售属性）
         }
 
         // 检索条件

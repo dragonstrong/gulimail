@@ -7,7 +7,6 @@
  */
 
 package io.renren.modules.sys.controller;
-
 import io.renren.common.annotation.SysLog;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.Constant;
@@ -20,11 +19,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Collections;
+import java.util.*;
 
 
 /**

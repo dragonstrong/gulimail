@@ -10,6 +10,7 @@ import com.atguigu.product.entity.CategoryBrandRelationEntity;
 import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryBrandRelationService;
 import com.atguigu.product.service.CategoryService;
+import com.atguigu.product.vo.BrandVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,9 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 @Slf4j
 @Service("categoryBrandRelationService")
 public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandRelationDao, CategoryBrandRelationEntity> implements CategoryBrandRelationService {
@@ -66,5 +69,15 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
         }else{
             log.info("关联{}已存在", JSON.toJSONString(categoryBrandRelation));
         }
+    }
+    @Override
+    public List<BrandVo> getBrandsByCatId(Long catId) {
+        List<Long> brandIds=Optional.ofNullable(getBaseMapper().selectList(new QueryWrapper<CategoryBrandRelationEntity>().eq("catelog_id",catId))).orElse(new ArrayList<>()).stream().map(CategoryBrandRelationEntity::getBrandId).collect(Collectors.toList());
+        return Optional.ofNullable(brandDao.selectList(new QueryWrapper<BrandEntity>().in("brand_id",brandIds))).orElse(new ArrayList<>()).stream().map(brandEntity -> {
+            BrandVo brandVo=new BrandVo();
+            brandVo.setBrandId(brandEntity.getBrandId());
+            brandVo.setBrandName(brandEntity.getName());
+            return brandVo;
+        }).collect(Collectors.toList());
     }
 }
