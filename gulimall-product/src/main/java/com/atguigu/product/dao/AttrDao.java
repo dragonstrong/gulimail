@@ -1,7 +1,5 @@
 package com.atguigu.product.dao;
-
 import com.atguigu.product.entity.AttrEntity;
-import com.atguigu.product.vo.AttrVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

@@ -1,10 +1,6 @@
 package com.atguigu.product.dto.rabbit;
-import com.atguigu.product.valid.AddGroup;
 import com.atguigu.product.valid.ListValue;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.ArrayList;
 /**
  * @Author qiang.long
  * @Date 2024/07/18

@@ -1,8 +1,9 @@
 package com.atguigu.product.controller;
+import com.atguigu.common.utils.R;
 import com.atguigu.product.service.ThreadTestService;
 import lombok.extern.slf4j.Slf4j;
-import com.atguigu.common.utils.R;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.concurrent.ExecutionException;

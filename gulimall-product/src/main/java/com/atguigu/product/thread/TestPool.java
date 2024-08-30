@@ -1,18 +1,9 @@
 package com.atguigu.product.thread;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
 
-import javax.swing.*;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import static java.util.Objects.hash;
 /**
  * @Author qiang.long
  * @Date 2024/05/02

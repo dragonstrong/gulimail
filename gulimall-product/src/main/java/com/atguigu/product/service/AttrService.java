@@ -4,8 +4,8 @@ import com.atguigu.product.entity.AttrEntity;
 import com.atguigu.product.vo.AttrRespVo;
 import com.atguigu.product.vo.AttrVo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,5 +23,13 @@ public interface AttrService extends IService<AttrEntity> {
     AttrRespVo getAttrInfo(Long attrId) throws Exception;
     void updateAttr(AttrVo attrVo);
     void deleteByIds(Long[] attrIds);
+    /**
+     * @description: 获取当前分组所有基本属性
+     **/
+    List<AttrEntity> getRelationAttrs(Long attrgroupId);
+    /**
+     * @description: 获取属性分组没有关联的其他属性
+     **/
+    PageUtils getNoRelationAttrs(Long attrgroupId, Map<String, Object> params) throws Exception;
 }
 

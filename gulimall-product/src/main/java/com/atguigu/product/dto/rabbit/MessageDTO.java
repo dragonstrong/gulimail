@@ -1,8 +1,6 @@
 package com.atguigu.product.dto.rabbit;
 import com.atguigu.product.entity.CategoryEntity;
 import lombok.Data;
-
-import java.util.Map;
 /**
  * @Author qiang.long
  * @Date 2024/07/18

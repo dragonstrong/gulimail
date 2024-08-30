@@ -1,7 +1,6 @@
 package com.atguigu.product.service;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.product.entity.CategoryBrandRelationEntity;
-import com.atguigu.product.entity.CategoryEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

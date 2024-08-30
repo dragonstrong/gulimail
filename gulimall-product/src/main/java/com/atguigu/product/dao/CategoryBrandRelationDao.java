@@ -1,13 +1,10 @@
 package com.atguigu.product.dao;
-
 import com.atguigu.product.entity.BrandEntity;
 import com.atguigu.product.entity.CategoryBrandRelationEntity;
 import com.atguigu.product.entity.CategoryEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 /**
  * 品牌分类关联
  * 

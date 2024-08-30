@@ -1,6 +1,4 @@
 package com.atguigu.product.enumeration;
-import com.baomidou.mybatisplus.annotation.EnumValue;
-import lombok.Data;
 import lombok.Getter;
 /**
  * @Author qiang.long

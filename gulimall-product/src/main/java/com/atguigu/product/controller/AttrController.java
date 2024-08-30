@@ -1,15 +1,12 @@
 package com.atguigu.product.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
-import com.atguigu.product.entity.AttrEntity;
 import com.atguigu.product.service.AttrService;
 import com.atguigu.product.vo.AttrRespVo;
 import com.atguigu.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 
@@ -44,7 +41,7 @@ public class AttrController {
      * @return: List<AttrEntity>
      **/
     @GetMapping("/{attrType}/list/{catelogId}")
-    public R getBaseAttr(@PathVariable Long catelogId, @PathVariable String attrType,@RequestParam Map<String, Object> params){
+    public R getBaseAttr(@PathVariable("catelogId") Long catelogId, @PathVariable("attrType") String attrType,@RequestParam Map<String, Object> params){
         PageUtils page=attrService.queryAttrPage(catelogId,attrType,params);
         return R.ok().put("page",page);
     }

@@ -1,18 +1,28 @@
 package com.atguigu.product.service.impl;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.Query;
+import com.atguigu.product.dao.AttrAttrgroupRelationDao;
+import com.atguigu.product.dao.AttrDao;
 import com.atguigu.product.dao.AttrGroupDao;
 import com.atguigu.product.entity.AttrGroupEntity;
 import com.atguigu.product.service.AttrGroupService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+@Slf4j
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
-
+    @Autowired
+    AttrAttrgroupRelationDao  attrAttrgroupRelationDao;
+    @Autowired
+    AttrDao attrDao;
+    @Autowired
+    AttrGroupDao attrGroupDao;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrGroupEntity> page = this.page(

@@ -10,7 +10,6 @@ import com.atguigu.product.entity.AttrEntity;
 import com.atguigu.product.entity.AttrGroupEntity;
 import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.enumeration.AttrTypeEnum;
-import com.atguigu.product.service.AttrAttrgroupRelationService;
 import com.atguigu.product.service.AttrService;
 import com.atguigu.product.service.CategoryService;
 import com.atguigu.product.vo.AttrRespVo;
@@ -18,8 +17,6 @@ import com.atguigu.product.vo.AttrVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
-import jodd.bean.BeanUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +26,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 @Service("attrService")
 public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements AttrService {
-    @Autowired
-    AttrAttrgroupRelationService attrAttrgroupRelationService;
     @Autowired
     AttrDao attrDao;
     @Autowired
@@ -59,7 +54,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         AttrAttrgroupRelationEntity attrAttrgroupRelationEntity=new AttrAttrgroupRelationEntity();
         if(attrVo.getAttrType()==1){  // 销售属性无分组
             attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId()).setAttrId(attrEntity.getAttrId());
-            attrAttrgroupRelationService.save(attrAttrgroupRelationEntity);
+            attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
         }
     }
     @Override
@@ -148,5 +143,37 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     public void deleteByIds(Long[] attrIds) {
         attrAttrgroupRelationDao.delete(new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_id",attrIds));
         removeByIds(Arrays.asList(attrIds));
+    }
+    @Override
+    public List<AttrEntity> getRelationAttrs(Long attrgroupId) {
+        List<Long> attrIds=Optional.ofNullable(attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id",attrgroupId))).orElse(new ArrayList<>()).
+                stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
+        return attrDao.selectBatchIds(attrIds);
+    }
+    @Override
+    public PageUtils getNoRelationAttrs(Long attrgroupId, Map<String, Object> params) throws Exception {
+        // 找到分组所属分类id
+        Long catelogId=Optional.ofNullable(attrGroupDao.selectById(attrgroupId)).map(AttrGroupEntity::getCatelogId).orElseThrow(()->new Exception("分组"+attrgroupId+"对应的分类不存在"));
+        // 找出分类下面所有分组  ->  分组所有已关联的属性id
+        List<Long> usedAttrIds=Optional.ofNullable(catelogId).map(id->
+                attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().eq("catelog_id",id))
+        ).map(list->list.stream().map(AttrGroupEntity::getAttrGroupId).collect(Collectors.toList())).map(attrgroupIds->
+                attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id",attrgroupIds))).map(attrAttrgroupRelationEntities ->
+                attrAttrgroupRelationEntities.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList())).orElse(new ArrayList<>());
+        // 排除已关联的属性id
+        QueryWrapper<AttrEntity> queryWrapper=new QueryWrapper<AttrEntity>().eq("catelog_id",catelogId);
+        if(!usedAttrIds.isEmpty()){
+            queryWrapper.notIn("attr_id",usedAttrIds);
+        }
+
+        // 检索条件
+        if(params.get("key")!=null){
+            String key=(String)params.get("key");
+            queryWrapper.and(obj->{
+                obj.eq("attr_id",key).or().like("attr_name",key);
+            });
+        }
+        IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), queryWrapper);
+        return new PageUtils(page);
     }
 }

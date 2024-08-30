@@ -1,5 +1,4 @@
 package com.atguigu.product.vo;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 /**
  * @Author qiang.long

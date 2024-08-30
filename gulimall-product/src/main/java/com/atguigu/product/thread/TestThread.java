@@ -1,15 +1,10 @@
 package com.atguigu.product.thread;
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.databind.deser.SettableAnyProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 /**
  * @Author qiang.long

@@ -4,7 +4,6 @@ import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.vo.Catalog2Vo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

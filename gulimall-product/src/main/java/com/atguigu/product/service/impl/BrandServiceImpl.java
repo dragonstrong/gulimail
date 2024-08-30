@@ -4,9 +4,7 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.product.dao.BrandDao;
 import com.atguigu.product.dao.CategoryBrandRelationDao;
 import com.atguigu.product.entity.BrandEntity;
-import com.atguigu.product.entity.CategoryBrandRelationEntity;
 import com.atguigu.product.service.BrandService;
-import com.atguigu.product.service.CategoryBrandRelationService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 @Service("brandService")
 public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> implements BrandService {
     @Autowired

@@ -2,7 +2,6 @@ package com.atguigu.product.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.product.entity.CategoryBrandRelationEntity;
-import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryBrandRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
