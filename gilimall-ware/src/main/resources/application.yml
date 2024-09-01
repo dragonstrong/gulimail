@@ -10,9 +10,14 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          enabled: false
   #服务命名
   application:
     name: gulimall-ware
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss # 指定时间格式
 
 # 配置mysql  .xml文件路径
 mybatis-plus:
@@ -24,3 +29,8 @@ mybatis-plus:
 #服务端口
 server:
   port: 11000
+
+
+logging:
+  level:
+    com.atguigu.ware: debug

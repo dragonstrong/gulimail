@@ -25,19 +25,18 @@ public class SkuInfoController {
     private SkuInfoService skuInfoService;
 
     /**
-     * 列表
+     * 商品管理-sku检索
      */
     @RequestMapping("/list")
     //@RequiresPermissions("product:skuinfo:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = skuInfoService.queryPage(params);
-
+        PageUtils page = skuInfoService.queryPageByCondition(params);
         return R.ok().put("page", page);
     }
 
 
     /**
-     * 信息
+     * 查询sku详情
      */
     @RequestMapping("/info/{skuId}")
     //@RequiresPermissions("product:skuinfo:info")

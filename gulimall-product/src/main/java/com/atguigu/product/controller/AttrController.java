@@ -1,12 +1,16 @@
 package com.atguigu.product.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.product.entity.ProductAttrValueEntity;
 import com.atguigu.product.service.AttrService;
+import com.atguigu.product.service.ProductAttrValueService;
 import com.atguigu.product.vo.AttrRespVo;
 import com.atguigu.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -21,6 +25,8 @@ import java.util.Map;
 public class AttrController {
     @Autowired
     private AttrService attrService;
+    @Autowired
+    private ProductAttrValueService  productAttrValueService;
 
     /**
      * 列表
@@ -44,6 +50,24 @@ public class AttrController {
     public R getBaseAttr(@PathVariable("catelogId") Long catelogId, @PathVariable("attrType") String attrType,@RequestParam Map<String, Object> params){
         PageUtils page=attrService.queryAttrPage(catelogId,attrType,params);
         return R.ok().put("page",page);
+    }
+
+    /**
+     * @description: 获取Spu基本属性
+     * @param:
+     * @param spuId
+     * @return: com.atguigu.common.utils.R
+     **/
+    @GetMapping("/base/listforspu/{spuId}")
+    public R getBaseAttrForSpu(@PathVariable("spuId") Long spuId){
+        List<ProductAttrValueEntity> productAttrValueEntityList=productAttrValueService.baseAttrlistForSpu(spuId);
+        return R.ok().put("data",productAttrValueEntityList);
+    }
+
+    @PostMapping("/update/{spuId}")
+    public R updateBaseAttrForSpu(@PathVariable("spuId") Long spuId,@RequestBody List<ProductAttrValueEntity> productAttrValueEntities){
+        productAttrValueService.updateBaseAttrForSpu(spuId,productAttrValueEntities);
+        return R.ok();
     }
 
 

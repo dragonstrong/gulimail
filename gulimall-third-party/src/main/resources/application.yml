@@ -10,7 +10,7 @@ spring:
 
 #服务端口
 server:
-  port: 11000
+  port: 12000
   servlet:
     context-path: /third-party  #所有接口uri添加前缀
 

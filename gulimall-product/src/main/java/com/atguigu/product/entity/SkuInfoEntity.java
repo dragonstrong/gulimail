@@ -20,9 +20,9 @@ public class SkuInfoEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * skuId IdType.INPUT手动指定，非自增主键
+	 * skuId
 	 */
-	@TableId(type = IdType.INPUT)
+	@TableId
 	private Long skuId;
 	/**
 	 * spuId

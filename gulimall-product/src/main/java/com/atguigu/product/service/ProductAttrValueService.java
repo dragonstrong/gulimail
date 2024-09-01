@@ -3,6 +3,7 @@ import com.atguigu.common.utils.PageUtils;
 import com.atguigu.product.entity.ProductAttrValueEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,5 +16,13 @@ import java.util.Map;
 public interface ProductAttrValueService extends IService<ProductAttrValueEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+    /**
+     * 获取Spu基本属性
+     **/
+    List<ProductAttrValueEntity> baseAttrlistForSpu(Long spuId);
+    /**
+     * 更新Spu基本属性值
+     **/
+    void updateBaseAttrForSpu(Long spuId,List<ProductAttrValueEntity> productAttrValueEntities);
 }
 

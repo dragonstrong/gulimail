@@ -30,6 +30,14 @@ spring:
           filters:
             - RewritePath=/api/member/?(?<segment>.*), /member/$\{segment}
 
+        # 负载均衡到gulimall-ware
+        - id: to-ware
+          uri: lb://gulimall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/ware/?(?<segment>.*), /ware/$\{segment}
+
         # 负载均衡到gulimall-third-party
         - id: to-third-party
           uri: lb://gulimall-third-party  #路由到gulimall-third-party

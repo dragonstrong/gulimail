@@ -25,10 +25,9 @@ public class WareInfoController {
     private WareInfoService wareInfoService;
 
     /**
-     * 列表
+     * 仓库维护-按条件检索
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("ware:wareinfo:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = wareInfoService.queryPage(params);
 
