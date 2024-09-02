@@ -221,8 +221,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return attr;
         }).collect(Collectors.toList());
 
-        // 组装需要的数据
-        // 查出当前spuId对应的所有sku
+        // 2.查出当前spuId对应的所有sku
         List<SkuInfoEntity> skus=skuInfoDao.selectList(new QueryWrapper<SkuInfoEntity>().eq("spu_id",spuId));
         List<Long> skuIds=new ArrayList<>();
         if(skus!=null){
@@ -231,13 +230,15 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         Map<Long,Boolean> stockMap=null;
         try {
-            // TODO 1.远程调用库存系统查出是否有库存
+            // 3.远程调用库存系统查出是否有库存
             Result<List<SkuHasStockVo>> hasStock=wareFeignService.getSkuHasStock(skuIds);
             stockMap=hasStock.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId,SkuHasStockVo::getHasStock));
         }catch (Exception e){
             log.error("远程调用库存服务出现异常，异常原因：{}",e);
         }
         Map<Long, Boolean> finalStockMap = stockMap;
+
+        // 4.组装需要的数据
         List<SkuEsModel> skuEsModels=skus.stream().map(sku->{
             SkuEsModel skuEsModel=new SkuEsModel();
             BeanUtils.copyProperties(sku,skuEsModel);
@@ -252,10 +253,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 skuEsModel.setHasStock(finalStockMap.get(sku.getSkuId()));
             }
 
-            // TODO 2.热度评分， 初始置0
+            // TODO 热度评分， 初始置0
             skuEsModel.setHotScore(0L);
 
-            // TODO 3.查询品牌和分类的信息
+            // 查询品牌和分类的信息
             BrandEntity brandEntity=brandDao.selectById(sku.getBrandId());
             if(brandEntity!=null){
                 skuEsModel.setBrandName(brandEntity.getName());
@@ -269,10 +270,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             skuEsModel.setAttrs(searchAttrs);
             return skuEsModel;
         }).collect(Collectors.toList());
-        // 5. 发送给gulimall-search服务将数据保存到ES
+
+        // 5. 将数据发送给gulimall-search服务并保存到ES
         Result result=searchFeignService.productStartUp(skuEsModels);
         if(result.getCode()==0){ // 远程调用成功
-            // TODO 修改spu发布状态
+            // 6. 修改spu发布状态
             SpuInfoEntity spuInfoEntity=new SpuInfoEntity();
             spuInfoEntity.setId(spuId);
             spuInfoEntity.setPublishStatus(PublishStatusEnum.UP.getCode());

@@ -397,4 +397,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         updateById(categoryEntity);
         categoryBrandRelationDao.updateCategoryName(categoryEntity);
     }
+    @Override
+    public List<CategoryEntity> getLevelOneCategories() {
+        return getBaseMapper().selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid",0));
+    }
 }

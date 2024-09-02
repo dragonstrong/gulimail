@@ -66,5 +66,9 @@ public interface CategoryService extends IService<CategoryEntity> {
     void removeMenuByIds(List<Long> asList);
     List<Long> finCatalogPath(Long thirdCatalogId) throws Exception;
     void updateDetail(CategoryEntity categoryEntity);
+    /**
+     * 获取所有一级分类
+     **/
+    List<CategoryEntity> getLevelOneCategories();
 }
 
