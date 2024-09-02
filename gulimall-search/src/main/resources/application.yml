@@ -1,0 +1,44 @@
+#配置mysql数据源
+spring:
+  datasource:
+    username: root
+    password: 181181@Lq
+    url: jdbc:mysql://192.168.30.128:4006/gulimall_pms
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848  # 127.0.0.1
+      config:
+        import-check:
+          enabled: false
+  application:
+    name: gulimall-search
+  ackson:
+    date-format: yyyy-MM-dd HH:mm:ss # 指定时间格式
+
+
+# 配置mysql  .xml文件路径
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml   # classpath*表示不只扫描自己的类路径，也包含引用其他jar包的类路径
+  # 主键自增
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1 # 配置全局逻辑删除规则
+      logic-not-delete-value: 0
+#服务端口
+server:
+  port: 14000
+logging:
+  level:
+    com.atguigu.product: debug
+
+
+#线程池参数
+gulimall:
+  thread:
+    core-pool-size: 50  #核心线程数
+    maximum-pool-size: 200 #最大线程数
+    keep-alive-time: 10 #休眠时长 ，单位s
+

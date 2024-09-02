@@ -1,15 +1,18 @@
 package com.atguigu.product.service.impl;
 import com.atguigu.common.to.SkuReductionTo;
 import com.atguigu.common.to.SpuBoundTo;
+import com.atguigu.common.to.es.SkuEsModel;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.Query;
 import com.atguigu.common.utils.R;
-import com.atguigu.product.dao.AttrDao;
-import com.atguigu.product.dao.SkuInfoDao;
-import com.atguigu.product.dao.SpuInfoDao;
-import com.atguigu.product.dao.SpuInfoDescDao;
+import com.atguigu.common.utils.Result;
+import com.atguigu.common.vo.SkuHasStockVo;
+import com.atguigu.product.dao.*;
 import com.atguigu.product.entity.*;
+import com.atguigu.product.enumeration.PublishStatusEnum;
 import com.atguigu.product.feign.CouponFeignService;
+import com.atguigu.product.feign.SearchFeignService;
+import com.atguigu.product.feign.WareFeignService;
 import com.atguigu.product.service.*;
 import com.atguigu.product.vo.SpuSaveVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -22,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 @Service("spuInfoService")
 public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> implements SpuInfoService {
@@ -45,13 +45,20 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     SkuSaleAttrValueService skuSaleAttrValueService;
     @Autowired
     CouponFeignService couponFeignService;
+    @Autowired
+    BrandDao brandDao;
+    @Autowired
+    CategoryDao categoryDao;
+    @Autowired
+    WareFeignService wareFeignService;
+    @Autowired
+    SearchFeignService searchFeignService;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
                 new Query<SpuInfoEntity>().getPage(params),
                 new QueryWrapper<SpuInfoEntity>()
         );
-
         return new PageUtils(page);
     }
     @Transactional
@@ -203,5 +210,95 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 queryWrapper
         );
         return new PageUtils(page);
+    }
+    @Override
+    public void up(Long spuId) {
+        // 1.查询当前sku所有用来检索的规格属性-共一个spu
+        List<ProductAttrValueEntity> productAttrValueEntities=productAttrValueService.getSearchAttrs(spuId);
+        List<SkuEsModel.Attr> searchAttrs=productAttrValueEntities.stream().map(productAttrValueEntity -> {
+            SkuEsModel.Attr attr=new SkuEsModel.Attr();
+            BeanUtils.copyProperties(productAttrValueEntity,attr);
+            return attr;
+        }).collect(Collectors.toList());
+
+        // 组装需要的数据
+        // 查出当前spuId对应的所有sku
+        List<SkuInfoEntity> skus=skuInfoDao.selectList(new QueryWrapper<SkuInfoEntity>().eq("spu_id",spuId));
+        List<Long> skuIds=new ArrayList<>();
+        if(skus!=null){
+            skuIds=skus.stream().map(SkuInfoEntity::getSkuId).collect(Collectors.toList());
+        }
+
+        Map<Long,Boolean> stockMap=null;
+        try {
+            // TODO 1.远程调用库存系统查出是否有库存
+            Result<List<SkuHasStockVo>> hasStock=wareFeignService.getSkuHasStock(skuIds);
+            stockMap=hasStock.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId,SkuHasStockVo::getHasStock));
+        }catch (Exception e){
+            log.error("远程调用库存服务出现异常，异常原因：{}",e);
+        }
+        Map<Long, Boolean> finalStockMap = stockMap;
+        List<SkuEsModel> skuEsModels=skus.stream().map(sku->{
+            SkuEsModel skuEsModel=new SkuEsModel();
+            BeanUtils.copyProperties(sku,skuEsModel);
+            // skuPrice ,skuImg
+            skuEsModel.setSkuPrice(sku.getPrice());
+            skuEsModel.setSkuImg(sku.getSkuDefaultImg());
+            // hasStock , hotScore
+            if(finalStockMap ==null){
+                // TODO 后面再处理
+                skuEsModel.setHasStock(true); // 调用远程服务出现异常直接置为有库存
+            }else{
+                skuEsModel.setHasStock(finalStockMap.get(sku.getSkuId()));
+            }
+
+            // TODO 2.热度评分， 初始置0
+            skuEsModel.setHotScore(0L);
+
+            // TODO 3.查询品牌和分类的信息
+            BrandEntity brandEntity=brandDao.selectById(sku.getBrandId());
+            if(brandEntity!=null){
+                skuEsModel.setBrandName(brandEntity.getName());
+                skuEsModel.setBrandImg(brandEntity.getLogo());
+            }
+            CategoryEntity category=categoryDao.selectById(sku.getCatalogId());
+            if(category!=null){
+                skuEsModel.setCatalogName(category.getName());
+            }
+            // 设置检索属性
+            skuEsModel.setAttrs(searchAttrs);
+            return skuEsModel;
+        }).collect(Collectors.toList());
+        // 5. 发送给gulimall-search服务将数据保存到ES
+        Result result=searchFeignService.productStartUp(skuEsModels);
+        if(result.getCode()==0){ // 远程调用成功
+            // TODO 修改spu发布状态
+            SpuInfoEntity spuInfoEntity=new SpuInfoEntity();
+            spuInfoEntity.setId(spuId);
+            spuInfoEntity.setPublishStatus(PublishStatusEnum.UP.getCode());
+            spuInfoEntity.setUpdateTime(new Date());
+            getBaseMapper().updateById(spuInfoEntity);
+        }else{
+            // 远程调用失败
+            // TODO 重复调用？ 接口幂等性 重试机制
+            /**
+             * Feign的调用流程
+             * 1. 构造请求数据，将对象转为json
+             * RequestTemplate template = this.buildTemplateFromArgs.create(argv);
+             * 2. 发送请求执行(执行成功会解码)
+             * executeAndDecode(template, options);
+             * 3. 执行请求时有重试机制（默认最大重试次数为5）
+             * while(true) {
+             *             try {
+             *                 return this.executeAndDecode(template, options);
+             *             } catch (RetryableException var9) {
+             *                     retryer.continueOrPropagate(e);
+             *                     throw ex; // 重试器有异常会抛出去
+             *                     continue;  // 没异常继续重试
+             *             }
+             *         }
+             **/
+
+        }
     }
 }

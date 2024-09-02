@@ -1,8 +1,10 @@
 package com.atguigu.ware.service;
 import com.atguigu.common.utils.PageUtils;
+import com.atguigu.common.vo.SkuHasStockVo;
 import com.atguigu.ware.entity.WareSkuEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,5 +26,12 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      * @return: void
      **/
     void addStock(Long skuId, Long wareId, Integer skuNum);
+    /**
+     * @description: 批量查询sku是否有库存
+     * @param:
+     * @param skuIds sku id
+     * @return: java.util.List<com.atguigu.ware.vo.SkuHasStockVo>
+     **/
+    List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds);
 }
 

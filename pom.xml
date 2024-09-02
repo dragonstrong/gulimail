@@ -20,9 +20,10 @@
         <module>gulimall-coupon</module>
         <module>gulimall-member</module>
         <module>gilimall-ware</module>
+        <module>gulimall-third-party</module>
+        <module>gulimall-search</module>
         <module>gulimall-gateway</module>
         <module>renren-fast</module>
         <module>renren-generator</module>
-        <module>gulimall-third-party</module>
     </modules>
 </project>

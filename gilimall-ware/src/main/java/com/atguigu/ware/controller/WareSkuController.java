@@ -1,12 +1,15 @@
 package com.atguigu.ware.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.utils.Result;
+import com.atguigu.common.vo.SkuHasStockVo;
 import com.atguigu.ware.entity.WareSkuEntity;
 import com.atguigu.ware.service.WareSkuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -23,6 +26,17 @@ import java.util.Map;
 public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
+    /**
+     * @description: 批量查询sku是否有库存
+     * @param:
+     * @param skuIds sku Id集合
+     * @return: com.atguigu.common.utils.R
+     **/
+    @PostMapping("/hasstock")
+    public Result<List<SkuHasStockVo>> getSkuHasStock(@RequestBody List<Long> skuIds){
+        List<SkuHasStockVo> skuHasStockVos=wareSkuService.getSkuHasStock(skuIds);
+        return Result.ok(skuHasStockVos);
+    }
 
     /**
      * 列表

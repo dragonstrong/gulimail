@@ -1,5 +1,4 @@
 package com.atguigu.ware.vo;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.math.BigDecimal;

@@ -1,7 +1,7 @@
 package com.atguigu.ware.vo;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 /**
  * @Author qiang.long

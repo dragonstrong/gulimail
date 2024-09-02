@@ -1,5 +1,4 @@
 package com.atguigu.ware.service.impl;
-import com.alibaba.nacos.shaded.io.grpc.netty.shaded.io.netty.util.internal.StringUtil;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.Query;
 import com.atguigu.ware.dao.WareInfoDao;

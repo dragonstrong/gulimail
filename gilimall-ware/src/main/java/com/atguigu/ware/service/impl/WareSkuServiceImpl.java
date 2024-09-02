@@ -1,26 +1,23 @@
 package com.atguigu.ware.service.impl;
-import com.alibaba.fastjson.JSON;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.Query;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.vo.SkuHasStockVo;
 import com.atguigu.ware.dao.WareSkuDao;
 import com.atguigu.ware.entity.WareSkuEntity;
 import com.atguigu.ware.feign.ProductFeignService;
 import com.atguigu.ware.service.WareSkuService;
-import com.atguigu.ware.vo.SkuInfoVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 @Slf4j
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
@@ -59,7 +56,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             // TODO 其他方法
             try {
                 R r=productFeignService.getSkuInfo(skuId);
-                if(r.getCode()==0){ // 失败不回滚，因为名字这个信息不是很重要
+                if(r.getCode()==0){ // 失败不回滚，名字不是很重要
                     if(r.get("skuInfo")!=null){
                         Map<String,Object> skuInfoVo= (Map<String,Object>)r.get("skuInfo");
                         wareSkuEntity.setSkuName((String) skuInfoVo.get("skuName"));
@@ -72,5 +69,17 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }else{ // 原来有，更新库存数量
             wareSkuDao.addStock(skuId,wareId,skuNum);
         }
+    }
+    @Override
+    public List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds) {
+        return skuIds.stream().map(skuId->{
+            SkuHasStockVo skuHasStockVo=new SkuHasStockVo();
+            // 一个sku可能分布在多个库存，因此  剩余量=总量-总锁定量
+            // SELECT SUM(stock-stock_locked) FROM `wms_ware_sku` WHERE sku_id=#{skuId};
+            skuHasStockVo.setSkuId(skuId);
+            Long stock=wareSkuDao.getSkuStock(skuId);
+            skuHasStockVo.setHasStock(stock!=null&&stock>0); // 有些可能没入库存，stock为null
+            return skuHasStockVo;
+        }).collect(Collectors.toList());
     }
 }

@@ -26,6 +26,16 @@ public class SpuInfoController {
     private SpuInfoService spuInfoService;
 
     /**
+     * spu上架-将相关数据存入ES以供检索
+     **/
+    @PostMapping("/{spuId}/up")
+    public R spuUp(@PathVariable("spuId") Long spuId){
+        spuInfoService.up(spuId);
+        return R.ok();
+
+    }
+
+    /**
      * spu管理-按条件检索
      */
     @RequestMapping("/list")

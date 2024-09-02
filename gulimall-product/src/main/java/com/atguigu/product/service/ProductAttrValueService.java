@@ -24,5 +24,9 @@ public interface ProductAttrValueService extends IService<ProductAttrValueEntity
      * 更新Spu基本属性值
      **/
     void updateBaseAttrForSpu(Long spuId,List<ProductAttrValueEntity> productAttrValueEntities);
+    /**
+     * 查询当前spu下所有用来检索的基本属性
+     **/
+    List<ProductAttrValueEntity> getSearchAttrs(Long spuId);
 }
 

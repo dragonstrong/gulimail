@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="gulimall-third-party" />
         <module name="product" />
+        <module name="search" />
         <module name="coupon" />
         <module name="member" />
         <module name="gulimall-common" />

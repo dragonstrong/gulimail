@@ -28,7 +28,6 @@ public class SkuInfoController {
      * 商品管理-sku检索
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("product:skuinfo:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = skuInfoService.queryPageByCondition(params);
         return R.ok().put("page", page);
@@ -39,7 +38,6 @@ public class SkuInfoController {
      * 查询sku详情
      */
     @RequestMapping("/info/{skuId}")
-    //@RequiresPermissions("product:skuinfo:info")
     public R info(@PathVariable("skuId") Long skuId){
 		SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
 
