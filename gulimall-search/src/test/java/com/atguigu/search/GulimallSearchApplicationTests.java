@@ -1,6 +1,7 @@
 package com.atguigu.search;
 import com.alibaba.fastjson.JSON;
 import com.atguigu.search.config.ElasticSearchConfig;
+import com.atguigu.search.constant.EsContant;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,9 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -77,6 +80,84 @@ public class GulimallSearchApplicationTests {
         log.info("检索结果：{}",searchResponse);
 
 
+    }
+    /**
+     * @description: 指定映射
+     **/
+    //@Test
+    public void createMapping() throws IOException {
+        // 1.给es中建立索引: product,并建立映射关系 gulimall-search/src/main/resources/product-mapping.txt
+        // 注意CreateIndexRequest导包，需为org.elasticsearch.client.indices.CreateIndexRequest;否则报错
+        CreateIndexRequest request = new CreateIndexRequest(EsContant.PRODUCT_INDEX);
+        request.mapping("{\n" +
+                "    \"properties\": {\n" +
+                "      \"skuId\": {\n" +
+                "        \"type\": \"long\"\n" +
+                "      },\n" +
+                "      \"spuId\": {\n" +
+                "        \"type\": \"keyword\"\n" +
+                "      },\n" +
+                "      \"skuTitle\": {\n" +
+                "        \"type\": \"text\",\n" +
+                "        \"analyzer\": \"ik_smart\"\n" +
+                "      },\n" +
+                "      \"skuPrice\": {\n" +
+                "        \"type\": \"keyword\"\n" +
+                "      },\n" +
+                "      \"skuImg\": {\n" +
+                "        \"type\": \"keyword\",\n" +
+                "        \"index\": false,\n" +
+                "        \"doc_values\": false\n" +
+                "      },\n" +
+                "      \"saleCount\": {\n" +
+                "        \"type\": \"long\"\n" +
+                "      },\n" +
+                "      \"hasStock\": {\n" +
+                "        \"type\": \"boolean\"\n" +
+                "      },\n" +
+                "      \"hotScore\": {\n" +
+                "        \"type\": \"long\"\n" +
+                "      },\n" +
+                "      \"brandId\": {\n" +
+                "        \"type\": \"long\"\n" +
+                "      },\n" +
+                "      \"catalogId\": {\n" +
+                "        \"type\": \"long\"\n" +
+                "      },\n" +
+                "      \"brandName\": {\n" +
+                "        \"type\": \"keyword\",\n" +
+                "        \"index\": false,\n" +
+                "        \"doc_values\": false\n" +
+                "      },\n" +
+                "      \"brandImg\": {\n" +
+                "        \"type\": \"keyword\",\n" +
+                "        \"index\": false,\n" +
+                "        \"doc_values\": false\n" +
+                "      },\n" +
+                "      \"catalogName\": {\n" +
+                "        \"type\": \"keyword\",\n" +
+                "        \"index\": false,\n" +
+                "        \"doc_values\": false\n" +
+                "      },\n" +
+                "      \"attrs\": {\n" +
+                "        \"type\": \"nested\",\n" +
+                "        \"properties\": {\n" +
+                "          \"attrId\": {\n" +
+                "            \"type\": \"long\"\n" +
+                "          },\n" +
+                "          \"attrName\": {\n" +
+                "            \"type\": \"keyword\",\n" +
+                "            \"index\": false,\n" +
+                "            \"doc_values\": false\n" +
+                "          },\n" +
+                "          \"attrValue\": {\n" +
+                "            \"type\": \"keyword\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }",XContentType.JSON);
+        restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
     }
 
 

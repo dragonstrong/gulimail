@@ -1,6 +1,5 @@
 package com.atguigu.common.utils;
 import com.atguigu.common.exception.BizCodeEnum;
-import org.apache.http.HttpStatus;
 
 import java.io.Serializable;
 /**
@@ -34,10 +33,7 @@ public class Result<T> implements Serializable {
     }
 
     public static <T> Result<T> error() {
-        Result r = new Result();
-        r.code=HttpStatus.SC_INTERNAL_SERVER_ERROR;
-        r.msg="未知异常，请联系管理员";
-        return r;
+        return error(BizCodeEnum.UNKNOW_EXCEPTION);
     }
     public static <T> Result<T> error(BizCodeEnum bizCodeEnum) {
         Result r = new Result();

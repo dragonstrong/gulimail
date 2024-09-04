@@ -55,6 +55,20 @@ spring:
             - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment} # /api/**  -> /renren-fast/**
 
 
+        # 域名转发规则,到search服务
+        - id: guliamll_search_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com  #域名search.gulimall.com的都转到search服务
+
+        # 域名转发规则,到product服务
+        - id: guliamll_host_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=gulimall.com  #域名gulimall.com的都转到product服务
+
+
+
   application:
     name: gulimall-gateway
 server:

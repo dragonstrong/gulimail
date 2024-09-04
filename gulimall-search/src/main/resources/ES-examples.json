@@ -1,0 +1,788 @@
+POST _analyze
+{ 
+  "analyzer": "ik_max_word", 
+  "text": "我是中国人"
+}
+
+POST _analyze
+{ 
+  "analyzer": "ik_max_word", 
+  "text": "乔碧罗殿下"
+}
+
+GET /user/_search/
+
+PUT product
+{
+  "mappings": {
+    "properties": {
+      "skuId": {
+        "type": "long"
+      },
+      "spuId": {
+        "type": "keyword"
+      },
+      "skuTitle": {
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "skuPrice": {
+        "type": "keyword"
+      },
+      "skuImg": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "saleCount": {
+        "type": "long"
+      },
+      "hasStock": {
+        "type": "boolean"
+      },
+      "hotScore": {
+        "type": "long"
+      },
+      "brandId": {
+        "type": "long"
+      },
+      "catalogId": {
+        "type": "long"
+      },
+      "brandName": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "brandImg": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "catalogName": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "attrs": {
+        "type": "nested",
+        "properties": {
+          "attrId": {
+            "type": "long"
+          },
+          "attrName": {
+            "type": "keyword",
+            "index": false,
+            "doc_values": false
+          },
+          "attrValue": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
+
+DELETE /product
+GET /product/_search
+{"from":0,"size":2,"query":{"bool":{"filter":[{"term":{"hasStock":{"value":true,"boost":1.0}}}],"adjust_pure_negative":true,"boost":1.0}},"aggregations":{"brand_agg":{"terms":{"field":"brandId","size":50,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]},"aggregations":{"brand_name_agg":{"terms":{"field":"brandName","size":1,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]}},"brand_img_agg":{"terms":{"field":"brandImg","size":1,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]}}}},"catalog_agg":{"terms":{"field":"catalogId","size":20,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]},"aggregations":{"catalog_name_agg":{"terms":{"field":"catalogName","size":1,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]}}}},"attr_agg":{"nested":{"path":"attrs"},"aggregations":{"attr_id_agg":{"terms":{"field":"attrs.attrId","size":10,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]},"aggregations":{"attr_name_agg":{"terms":{"field":"attrs.attrName","size":1,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]}},"attr_value_agg":{"terms":{"field":"attrs.attrValue","size":50,"min_doc_count":1,"shard_min_doc_count":0,"show_term_doc_count_error":false,"order":[{"_count":"desc"},{"_key":"asc"}]}}}}}}}}
+
+
+GET /product/_mapping
+
+
+# 组装查询条件DSL
+#模糊匹配，过滤（按属性、分类、品牌、价格区间、库存等），排序，分页，高亮
+#聚合分析
+GET product/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "skuTitle": "华为" 
+          }
+        }
+      ],
+      "filter": [
+        {
+        "term": {
+          "catalogId": "225"
+        }
+      },
+        {
+        "terms": {
+          "brandId": [
+            "9",
+            "12"
+          ]
+        }
+      },
+        {
+        "nested": {
+          "path": "attrs",
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "attrs.attrId": {
+                      "value": "15"
+                    }
+                  }
+                },
+                {
+                  "terms": {
+                    "attrs.attrValue": [
+                      "HUAWEI Kirin 980",
+                      "海思（Hisilicon）"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+        {
+        "term": {
+          "hasStock": "true"
+        }
+      },
+        {
+          "range": {
+          "skuPrice": {
+            "gte": 5000,
+            "lte": 8000
+          }
+        }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "skuPrice": {
+        "order": "desc"
+      }
+    }
+  ],
+   "from": 0,
+  "size": 1,
+  "highlight": {
+    "fields": {
+      "skuTitle":{}
+    },  
+    "pre_tags": "<b style='color:red'>",
+    "post_tags": "</b>"
+    
+  },
+  "aggs": {
+    "brand_agg": {
+      "terms": {
+        "field": "brandId",
+        "size": 10
+      },
+      "aggs": {
+        "brand_name_agg": {
+          "terms": {
+            "field": "brandName",
+            "size": 10
+          }
+        },
+        "brand_img_agg": {
+          "terms": {
+            "field": "brandImg",
+            "size": 10
+          }
+        }
+      }
+    },
+    "catalog_agg": {
+      "terms": {
+        "field": "catalogId",
+        "size": 10
+      },
+      "aggs": {
+        "catalog_name_agg": {
+          "terms": {
+            "field": "catalogName",
+            "size": 10
+          }
+        }
+      }
+    },
+    "attr_agg": {
+      "nested":{
+          "path":"attrs"
+        },
+      "aggs": {
+        "attr_id__agg": {
+          "terms": {
+            "field": "attrs.attrId",
+            "size": 10
+          },
+          "aggs": {
+            "attr_name_agg": {
+              "terms": {
+                "field": "attrs.attrName",
+                "size": 10
+              }
+            },
+            "attr_value_agg": {
+              "terms": {
+                "field": "attrs.attrValue",
+                "size": 10
+              }
+            }
+          }
+        }
+      }
+    }
+    
+  }
+ 
+}
+
+
+
+
+
+
+# 嵌入型（nested）  atts检索
+GET product/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "nested": {
+          "path": "attrs",
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "attrs.attrId": {
+                      "value": "15"
+                    }
+                  }
+                },
+                {
+                  "terms": {
+                    "attrs.attrValue": [
+                      "HUAWEI Kirin 980",
+                      "海思（Hisilicon）"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+#排序检索（sort）
+GET product/_search
+{
+  "sort": [
+    {
+      "skuPrice": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+#排序价格区间检索
+GET product/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "range": {
+          "skuPrice": {
+            "gte": 7000,
+            "lte": 9000
+          }
+        }
+      }
+    }
+  }
+}
+
+#分页(从第0个记录开始，查询1个)
+GET product/_search
+{
+  "from": 0,
+  "size": 1
+}
+
+
+#高量标题
+GET /product/_search
+{
+  "highlight": {
+    "fields": {
+      "skuTitle":{}
+    },  
+    "pre_tags": "<b style='color:red'>",
+    "post_tags": "</b>"
+    
+  }
+}
+
+#聚合分析(按品牌、分类)  
+#aggs为子聚合（基于上一次聚合的数据），为了取出品牌名和分类名
+# 聚合属性(att用嵌入式聚合 )
+GET /product/_search
+{
+  "aggs": {
+    "brand_agg": {
+      "terms": {
+        "field": "brandId",
+        "size": 10
+      },
+      "aggs": {
+        "brand_name_agg": {
+          "terms": {
+            "field": "brandName",
+            "size": 10
+          }
+        },
+        "brand_img_agg": {
+          "terms": {
+            "field": "brandImg",
+            "size": 10
+          }
+        }
+      }
+    },
+    "catalog_agg": {
+      "terms": {
+        "field": "catalogId",
+        "size": 10
+      },
+      "aggs": {
+        "catalog_name_agg": {
+          "terms": {
+            "field": "catalogName",
+            "size": 10
+          }
+        }
+      }
+    },
+    "attr_agg": {
+      "nested":{
+          "path":"attrs"
+        },
+      "aggs": {
+        "attr_id__agg": {
+          "terms": {
+            "field": "attrs.attrId",
+            "size": 10
+          },
+          "aggs": {
+            "attr_name_agg": {
+              "terms": {
+                "field": "attrs.attrName",
+                "size": 10
+              }
+            },
+            "attr_value_agg": {
+              "terms": {
+                "field": "attrs.attrValue",
+                "size": 10
+              }
+            }
+          }
+        }
+      }
+    }
+    
+  }
+}
+
+
+
+
+
+GET /product/_search
+
+DELETE /product
+
+
+
+
+
+GET /product/_search
+{
+  "from": 0,
+  "size": 2,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "skuTitle": {
+              "query": "华为",
+              "operator": "OR",
+              "prefix_length": 0,
+              "max_expansions": 50,
+              "fuzzy_transpositions": true,
+              "lenient": false,
+              "zero_terms_query": "NONE",
+              "auto_generate_synonyms_phrase_query": true,
+              "boost": 1.0
+            }
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "catalogId": {
+              "value": 225,
+              "boost": 1.0
+            }
+          }
+        },
+        {
+          "nested": {
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "attrs.attrId": {
+                        "value": "15",
+                        "boost": 1.0
+                      }
+                    }
+                  },
+                  {
+                    "terms": {
+                      "attrs.attrValue": [
+                        "海思（Hisilicon）",
+                        "A13"
+                      ],
+                      "boost": 1.0
+                    }
+                  }
+                ],
+                "adjust_pure_negative": true,
+                "boost": 1.0
+              }
+            },
+            "path": "attrs",
+            "ignore_unmapped": false,
+            "score_mode": "none",
+            "boost": 1.0
+          }
+        },
+        {
+          "nested": {
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "attrs.attrId": {
+                        "value": "16",
+                        "boost": 1.0
+                      }
+                    }
+                  },
+                  {
+                    "terms": {
+                      "attrs.attrValue": [
+                        "HUAWEI Kirin 980"
+                      ],
+                      "boost": 1.0
+                    }
+                  }
+                ],
+                "adjust_pure_negative": true,
+                "boost": 1.0
+              }
+            },
+            "path": "attrs",
+            "ignore_unmapped": false,
+            "score_mode": "none",
+            "boost": 1.0
+          }
+        },
+        {
+          "term": {
+            "hasStock": {
+              "value": true,
+              "boost": 1.0
+            }
+          }
+        },
+        {
+          "range": {
+            "skuPrice": {
+              "from": "4000",
+              "to": "6000",
+              "include_lower": true,
+              "include_upper": true,
+              "boost": 1.0
+            }
+          }
+        }
+      ],
+      "adjust_pure_negative": true,
+      "boost": 1.0
+    }
+  },
+  "aggregations": {
+    "brand_agg": {
+      "terms": {
+        "field": "brandId",
+        "size": 50,
+        "min_doc_count": 1,
+        "shard_min_doc_count": 0,
+        "show_term_doc_count_error": false,
+        "order": [
+          {
+            "_count": "desc"
+          },
+          {
+            "_key": "asc"
+          }
+        ]
+      },
+      "aggregations": {
+        "brand_name_agg": {
+          "terms": {
+            "field": "brandName",
+            "size": 1,
+            "min_doc_count": 1,
+            "shard_min_doc_count": 0,
+            "show_term_doc_count_error": false,
+            "order": [
+              {
+                "_count": "desc"
+              },
+              {
+                "_key": "asc"
+              }
+            ]
+          }
+        },
+        "brand_img_agg": {
+          "terms": {
+            "field": "brandImg",
+            "size": 1,
+            "min_doc_count": 1,
+            "shard_min_doc_count": 0,
+            "show_term_doc_count_error": false,
+            "order": [
+              {
+                "_count": "desc"
+              },
+              {
+                "_key": "asc"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "catalog_agg": {
+      "terms": {
+        "field": "catalogId",
+        "size": 20,
+        "min_doc_count": 1,
+        "shard_min_doc_count": 0,
+        "show_term_doc_count_error": false,
+        "order": [
+          {
+            "_count": "desc"
+          },
+          {
+            "_key": "asc"
+          }
+        ]
+      },
+      "aggregations": {
+        "catalog_name_agg": {
+          "terms": {
+            "field": "catalogName",
+            "size": 1,
+            "min_doc_count": 1,
+            "shard_min_doc_count": 0,
+            "show_term_doc_count_error": false,
+            "order": [
+              {
+                "_count": "desc"
+              },
+              {
+                "_key": "asc"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "attr_agg": {
+      "nested": {
+        "path": "attrs"
+      },
+      "aggregations": {
+        "attr_id_agg": {
+          "terms": {
+            "field": "attrs.attrId",
+            "size": 10,
+            "min_doc_count": 1,
+            "shard_min_doc_count": 0,
+            "show_term_doc_count_error": false,
+            "order": [
+              {
+                "_count": "desc"
+              },
+              {
+                "_key": "asc"
+              }
+            ]
+          },
+          "aggregations": {
+            "attr_name_agg": {
+              "terms": {
+                "field": "attrs.attrName",
+                "size": 1,
+                "min_doc_count": 1,
+                "shard_min_doc_count": 0,
+                "show_term_doc_count_error": false,
+                "order": [
+                  {
+                    "_count": "desc"
+                  },
+                  {
+                    "_key": "asc"
+                  }
+                ]
+              }
+            },
+            "attr_name_value": {
+              "terms": {
+                "field": "attrs.attrValue",
+                "size": 1,
+                "min_doc_count": 1,
+                "shard_min_doc_count": 0,
+                "show_term_doc_count_error": false,
+                "order": [
+                  {
+                    "_count": "desc"
+                  },
+                  {
+                    "_key": "asc"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "highlight": {
+    "pre_tags": [
+      "<b style='color:red'>"
+    ],
+    "post_tags": [
+      "</b>"
+    ],
+    "fields": {
+      "skuTitle": {
+        
+      }
+    }
+  }
+}
+
+
+
+
+
+#获取映射
+GET /product/_mapping
+
+#添加映射
+PUT /product/_mapping
+{
+  "mappings": {
+    "properties": {
+      "skuId": {
+        "type": "long"
+      },
+      "spuId": {
+        "type": "keyword"
+      },
+      "skuTitle": {
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "skuPrice": {
+        "type": "keyword"
+      },
+      "skuImg": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "saleCount": {
+        "type": "long"
+      },
+      "hasStock": {
+        "type": "boolean"
+      },
+      "hotScore": {
+        "type": "long"
+      },
+      "brandId": {
+        "type": "long"
+      },
+      "catalogId": {
+        "type": "long"
+      },
+      "brandName": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "brandImg": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "catalogName": {
+        "type": "keyword",
+        "index": false,
+        "doc_values": false
+      },
+      "attrs": {
+        "type": "nested",
+        "properties": {
+          "attrId": {
+            "type": "long"
+          },
+          "attrName": {
+            "type": "keyword",
+            "index": false,
+            "doc_values": false
+          },
+          "attrValue": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}

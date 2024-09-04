@@ -1,10 +1,5 @@
 #配置mysql数据源
 spring:
-  datasource:
-    username: root
-    password: 181181@Lq
-    url: jdbc:mysql://192.168.30.128:4006/gulimall_pms
-    driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
       discovery:
@@ -14,8 +9,10 @@ spring:
           enabled: false
   application:
     name: gulimall-search
-  ackson:
+  jackson:
     date-format: yyyy-MM-dd HH:mm:ss # 指定时间格式
+  thymeleaf:
+    cache: false #关闭thymeleaf缓存，方便开发期间看到实时效果
 
 
 # 配置mysql  .xml文件路径
