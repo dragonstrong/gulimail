@@ -42,6 +42,6 @@ public class IndexWebController {
     @ResponseBody
     @GetMapping("index/json/catalog.json")
     public Map<String, List<Catalog2Vo>> getCatalogJson(){
-        return categoryService.getCatalogJsonByDB();
+        return categoryService.getCatalogJsonWithLock();
     }
 }

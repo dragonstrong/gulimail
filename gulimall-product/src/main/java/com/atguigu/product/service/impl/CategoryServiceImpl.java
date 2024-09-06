@@ -88,7 +88,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      **/
     @Override
     public Map<String, List<Catalog2Vo>> getCatalogJsonByDB() {
-        log.info("查询了数据库");
+        log.info("查数据库");
         Map<String, List<Catalog2Vo>> map = null;  // 结果
         // 找一级分类
         List<CategoryEntity> categoryEntityList = getBaseMapper().selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
@@ -237,7 +237,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             //map = getCatalogJsonFromDBWithDistributeLock();
             map=getCatalogJsonFromDBWithRedisson();
             // 写入redis (先转为json String, 方便跨语言和平台，直接写入java数据结构其他语言获取不方便)
-            ops.set(CATALOG_JSON, JSON.toJSONString(map));
+            //ops.set(CATALOG_JSON, JSON.toJSONString(map));
+            //stringRedisTemplate.expire(CATALOG_JSON,3,TimeUnit.MINUTES); // 设置3min过期
         } else {
             // 缓存里有直接返回
             log.info("缓存中有二级三级分类数据，直接返回");
@@ -324,6 +325,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         try {
             map = getCatalogJsonByDB();
             stringRedisTemplate.opsForValue().set(CATALOG_JSON, JSON.toJSONString(map));
+            stringRedisTemplate.expire(CATALOG_JSON,3,TimeUnit.MINUTES); // 设置3min过期
         } finally { // 无论业务执行成功或失败，都要解锁
             lock.unlock();  // 释放锁
             return map;

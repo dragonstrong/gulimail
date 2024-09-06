@@ -12,5 +12,5 @@ public class EsContant {
     /**
      * 分页大小
      **/
-    public static final Integer PRODUCT_PAGE_SIZE=5;
+    public static final Integer PRODUCT_PAGE_SIZE=4;
 }

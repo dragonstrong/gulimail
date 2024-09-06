@@ -3,6 +3,7 @@ import com.alibaba.fastjson.JSON;
 import com.atguigu.common.utils.R;
 import com.atguigu.product.entity.CategoryEntity;
 import com.atguigu.product.service.CategoryService;
+import com.atguigu.product.valid.DeleteCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +53,7 @@ public class CategoryController {
     /**
      * 保存
      */
+    @DeleteCache
     @RequestMapping("/save")
     //@RequiresPermissions("product:category:save")
     public R save(@RequestBody CategoryEntity category){
@@ -63,6 +65,7 @@ public class CategoryController {
     /**
      * 修改
      */
+    @DeleteCache
     @RequestMapping("/update")
     //@RequiresPermissions("product:category:update")
     public R update(@RequestBody CategoryEntity category){
@@ -73,6 +76,7 @@ public class CategoryController {
     /**
      * 修改sort
      */
+    @DeleteCache
     @RequestMapping("/update/sort")
     //@RequiresPermissions("product:category:update")
     public R update(@RequestBody CategoryEntity[] category){
@@ -83,6 +87,7 @@ public class CategoryController {
     /**
      * 删除菜单
      */
+    @DeleteCache
     @RequestMapping("/delete")
     //@RequiresPermissions("product:category:delete")
     public R delete(@RequestBody Long[] catIds){

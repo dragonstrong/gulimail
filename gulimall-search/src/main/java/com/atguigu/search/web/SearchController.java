@@ -21,12 +21,12 @@ public class SearchController {
     MallSearchService mallSearchService;
 
     /**
-     * @description: 检索+  页面跳转：浏览器访问http://search.gulimall.com/list.html  -> 跳到list.html
+     * @description: 检索+  页面跳转：浏览器访问http://search.gulimall.com 和 http://search.gulimall.com/list.html  -> 都跳到list.html
      * @param:
      * @param searchParam 前端传来的检索条件
      * @return: String
      **/
-    @GetMapping("/list.html")
+    @GetMapping({"/","/list.html"})
     public String listPage(SearchParam searchParam, Model model) throws IOException {
         /**
          * 根据页面传来的检索参数去ES中检索，并返回结果

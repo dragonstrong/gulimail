@@ -54,9 +54,4 @@ public class SearchParam {
      * 分页当前页码(起始号)，默认1
      **/
     private Integer pageNum=1;
-
-
-
-
-
 }
