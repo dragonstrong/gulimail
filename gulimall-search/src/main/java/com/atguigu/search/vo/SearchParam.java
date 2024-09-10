@@ -54,4 +54,9 @@ public class SearchParam {
      * 分页当前页码(起始号)，默认1
      **/
     private Integer pageNum=1;
+
+    /**
+     * 原来的所有查询条件：支持面包屑导航功能
+     **/
+    private String _queryString;
 }

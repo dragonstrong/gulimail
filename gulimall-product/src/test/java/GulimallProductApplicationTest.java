@@ -1,6 +1,12 @@
+import com.alibaba.fastjson.JSON;
 import com.atguigu.product.GulimallProductApplication;
+import com.atguigu.product.dao.AttrGroupDao;
+import com.atguigu.product.dao.SkuSaleAttrValueDao;
 import com.atguigu.product.entity.CategoryEntity;
+import com.atguigu.product.vo.SkuItemSaleAttrVo;
+import com.atguigu.product.vo.SpuItemAttrGroupVo;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
@@ -8,6 +14,8 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 /**
  * @Author qiang.long
  * @Date 2024/03/25
@@ -21,6 +29,11 @@ public class GulimallProductApplicationTest {
     AmqpAdmin amqpAdmin;
     @Autowired
     RabbitTemplate rabbitTemplate;
+    @Autowired
+    AttrGroupDao attrGroupDao;
+
+    @Autowired
+    SkuSaleAttrValueDao skuSaleAttrValueDao;
     /**
      * @description:创建交换机
      */
@@ -119,6 +132,14 @@ public class GulimallProductApplicationTest {
 
 
      */
+
+    @Test
+    public void testJoin(){
+        List<SpuItemAttrGroupVo> attrGroupVos= attrGroupDao.getAttrGroupWithAttrs(19L,225L);
+        log.info("attrGroupVos:{}",JSON.toJSONString(attrGroupVos));
+        List<SkuItemSaleAttrVo> saleAttrs=skuSaleAttrValueDao.getSaleAttrs(19L);
+        log.info("saleAttrs:{}",JSON.toJSONString(saleAttrs));
+    }
 
 
 }

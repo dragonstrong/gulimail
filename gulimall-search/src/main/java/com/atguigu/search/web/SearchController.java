@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 /**
  * @Author qiang.long
@@ -27,7 +28,8 @@ public class SearchController {
      * @return: String
      **/
     @GetMapping({"/","/list.html"})
-    public String listPage(SearchParam searchParam, Model model) throws IOException {
+    public String listPage(SearchParam searchParam, Model model, HttpServletRequest request) throws IOException {
+        searchParam.set_queryString(request.getQueryString()); // 设置查询条件（面包屑导航）
         /**
          * 根据页面传来的检索参数去ES中检索，并返回结果
          **/

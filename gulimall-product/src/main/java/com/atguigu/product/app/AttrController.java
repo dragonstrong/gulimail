@@ -73,7 +73,7 @@ public class AttrController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{attrId}")
+    @GetMapping("/info/{attrId}")
     //@RequiresPermissions("product:attr:info")
     public R info(@PathVariable("attrId") Long attrId) throws Exception {
         AttrRespVo attrRespVo = attrService.getAttrInfo(attrId);

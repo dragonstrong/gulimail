@@ -51,6 +51,27 @@ public class SearchResult {
      **/
     private List<AttrVo> attrs;
 
+    //================以上是返给页面的所有信息===================
+
+    // 面包屑导航数据
+    private List<NavVo> navs;
+
+    @Data
+    public static class NavVo{
+        /**
+         * 导航名字
+         **/
+        private String navName;
+        /**
+         * 导航值
+         **/
+        private String navValue;
+        /**
+         * 取消条件跳到的地址
+         **/
+        private String link;
+    }
+
 
 
     /**

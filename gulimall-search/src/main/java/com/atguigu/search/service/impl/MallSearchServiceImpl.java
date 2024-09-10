@@ -1,9 +1,13 @@
 package com.atguigu.search.service.impl;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.to.es.SkuEsModel;
+import com.atguigu.common.utils.R;
 import com.atguigu.search.config.ElasticSearchConfig;
 import com.atguigu.search.constant.EsContant;
+import com.atguigu.search.feign.ProductFeignService;
 import com.atguigu.search.service.MallSearchService;
+import com.atguigu.search.vo.AttrResponseVo;
 import com.atguigu.search.vo.SearchParam;
 import com.atguigu.search.vo.SearchResult;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +52,8 @@ import java.util.stream.Collectors;
 public class MallSearchServiceImpl implements MallSearchService {
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+    @Autowired
+    ProductFeignService productFeignService;
     @Override
     public SearchResult search(SearchParam searchParam) throws IOException {
         // 去ES中查询
@@ -312,6 +320,39 @@ public class MallSearchServiceImpl implements MallSearchService {
             pageNavs.add(i);
         }
         result.setPageNavs(pageNavs);   //导航页
+        /**
+         * 6.构建面包屑导航
+         **/
+        if(searchParam.getAttrs()!=null&&!searchParam.getAttrs().isEmpty()){
+            List<SearchResult.NavVo> navVos=searchParam.getAttrs().stream().map(attr->{
+                // 1.分析每个attr传过来的查询参数值
+                SearchResult.NavVo navVo=new SearchResult.NavVo();
+                // attrs=2_5寸:6寸
+                String[] s=attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r=productFeignService.attrInfo(Long.parseLong(s[0]));
+                if(r.getCode()==0){
+                    AttrResponseVo data=r.getData("attr", new TypeReference<AttrResponseVo>() {
+                    });
+                    navVo.setNavName(data.getAttrName());
+                }else{
+                    navVo.setNavName(s[0]);
+                }
+                // 1. 取消了面包屑后，要跳转的地方：将请求地址的url里面的当前url替换
+                // 拿到所有的查询条件（从HttpServletRequest里获取，见SearchController listPage）,  去掉当前的
+                try {
+                    String encode= URLEncoder.encode(attr,"UTF-8");
+                    encode=encode.replace("+","%20");// 浏览器和java的差异化处理： 空格前端编码为%20  但java里为+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String replace=searchParam.get_queryString().replace("&attrs="+attr,"");
+                navVo.setLink("http://search.gulimall.com/list.html?"+replace);
+                return navVo;
+            }).collect(Collectors.toList());
+            result.setNavs(navVos);
+        }
+
         return result;
     }
 }

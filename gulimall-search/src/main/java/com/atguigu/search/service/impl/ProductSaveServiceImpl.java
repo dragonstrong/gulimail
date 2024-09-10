@@ -16,7 +16,6 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +34,7 @@ public class ProductSaveServiceImpl implements ProductSaveService {
     /**
      * 主程序启动默认执行：创建索引及映射
      **/
-    @PostConstruct
+    //@PostConstruct
     public void createIndexAndMapping() throws IOException {
         // 1.给es中建立索引: product,并建立映射关系 gulimall-search/src/main/resources/product-mapping.txt
         // 注意CreateIndexRequest导包，需为org.elasticsearch.client.indices.CreateIndexRequest;否则报错
@@ -108,7 +107,7 @@ public class ProductSaveServiceImpl implements ProductSaveService {
     public boolean productStartUp(List<SkuEsModel> skuEsModels) throws IOException {
         // 保存到ES
         // 1.给es中建立索引（createIndexAndMapping方法）: product,并建立映射关系 gulimall-search/src/main/resources/product-mapping.txt
-
+        createIndexAndMapping();
         // 2.构造批量请求
         BulkRequest bulkRequest=new BulkRequest();
         for(SkuEsModel skuEsModel:skuEsModels){

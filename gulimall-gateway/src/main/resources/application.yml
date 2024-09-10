@@ -65,7 +65,7 @@ spring:
         - id: guliamll_host_route
           uri: lb://gulimall-product
           predicates:
-            - Host=gulimall.com  #域名gulimall.com的都转到product服务
+            - Host=gulimall.com,item.gulimall.com  #域名gulimall.com的都转到product服务
 
 
 
