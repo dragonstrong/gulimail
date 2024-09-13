@@ -95,7 +95,7 @@
 										<dt><img th:src="${item.image}" alt=""></dt>
 										<dd style="width: 300px">
 											<p>
-												<span th:text="${item.title}">TCL 55A950C 55英寸32核</span>
+												<span class="skuInfoBtn" th:attr="skuId=${item.skuId}" th:text="${item.title}">TCL 55A950C 55英寸32核</span>
 												<br/>
 												<span th:each="attr:${item.skuAttr}" th:text="${attr}">尺码: 55时 超薄曲面 人工智能</span>
 											</p>
@@ -116,7 +116,7 @@
 									</li>
 									<li style="font-weight:bold"><p class="zj">￥[[${#numbers.formatDecimal(item.totalPrice,3,2)}]]</p></li>
 									<li>
-										<p>删除</p>
+										<p class="deleteItemBtn" th:attr="skuId=${item.skuId}">删除</p>
 
 									</li>
 								</ol>
@@ -144,7 +144,7 @@
 					</div>
 					<div>
 						<ol>
-							<li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.totalPrice,3,2)}]]</span> </li>
+							<li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.getTotalPrice,3,2)}]]</span> </li>
 							<li>优惠:￥[[${#numbers.formatDecimal(cart.reduce,1,2)}]]</span> </li>
 
 						</ol>
@@ -168,7 +168,7 @@
 				</dl>
 			</div>
 			<div>
-				<button type="button">删除</button>
+				<button type="button" onclick="deleteItem()">删除</button>
 
 			</div>
 		</div>
@@ -780,5 +780,22 @@
 			var num=$(this).parent().find(".countOpsNum").text();
 			location.href="http://cart.gulimall.com/countItem.html?skuId="+skuId+"&num="+num;
 		})
+
+
+		$(".skuInfoBtn").click(function (){
+			var skuId=$(this).attr("skuId");
+			location.href="http://item.gulimall.com/"+skuId+".html";
+		})
+
+		// 删除购物项
+		function deleteItem(){
+			location.href="http://cart.gulimall.com/deleteItem.html?skuId="+deleteSkuId;
+		}
+
+		var deleteSkuId=0;
+		$(".deleteItemBtn").click(function (){
+			deleteSkuId=$(this).attr("skuId");
+		})
+
 	</script>
 </html>

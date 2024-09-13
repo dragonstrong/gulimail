@@ -96,5 +96,16 @@ public class CartController {
     }
 
 
+    /**
+     * @description: 删除购物项
+     * @param:
+     * @param skuId
+     * @return: java.lang.String
+     **/
+    @GetMapping("/deleteItem.html")
+    public String deleteItem(@RequestParam("skuId") Long skuId){
+        cartService.deleteItem(skuId);
+        return "redirect:http://cart.gulimall.com/cart.html"; // 重定向到购物车列表页
+    }
 
 }

@@ -153,9 +153,6 @@ public class CartServiceImpl implements CartService{
 
     /**
      * @description: 清空购物车
-     * @param:
-     * @param cartKey
-     * @return: void
      **/
     @Override
     public void clearCart(String cartKey){
@@ -172,5 +169,10 @@ public class CartServiceImpl implements CartService{
         CartItem cartItem=getCartItem(skuId);
         cartItem.setCount(num);
         getCartOps().put(skuId.toString(),JSON.toJSONString(cartItem));
+    }
+    @Override
+    public void deleteItem(Long skuId) {
+        BoundHashOperations<String,Object,Object> ops=getCartOps();
+        ops.delete(skuId.toString());
     }
 }

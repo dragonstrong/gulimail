@@ -54,7 +54,9 @@ public class Cart {
         // 购物项总价
         if(items!=null&&!items.isEmpty()){
             for(CartItem cartItem:items){
-                total=total.add(cartItem.getTotalPrice());
+                if(cartItem.getCheck()){
+                    total=total.add(cartItem.getTotalPrice());
+                }
             }
         }
 

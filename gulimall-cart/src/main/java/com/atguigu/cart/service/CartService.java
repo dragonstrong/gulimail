@@ -30,4 +30,8 @@ public interface CartService {
      * 修改购物车中购物项的数量
      **/
     void changeCount(Long skuId, Integer num);
+    /**
+     * 删除购物车中的购物项
+     **/
+    void deleteItem(Long skuId);
 }
