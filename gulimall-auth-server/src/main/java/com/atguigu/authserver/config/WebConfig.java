@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @Description 页面跳转配置
  **/
 @Configuration
-public class GulimallWebConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
     /**
      * 页面跳转，等价于写Controller
      *     @GetMapping("/login.html")

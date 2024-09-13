@@ -1,4 +1,4 @@
-package com.atguigu.product.config;
+package com.atguigu.cart.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -11,7 +11,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
  * @Description Session配置
  **/
 @Configuration
-public class GulimallSessionConfig {
+public class SessionConfig {
     /**
      * 配置Session作用域
      **/

@@ -17,4 +17,8 @@ import java.util.List;
 @Mapper
 public interface SkuSaleAttrValueDao extends BaseMapper<SkuSaleAttrValueEntity> {
     List<SkuItemSaleAttrVo> getSaleAttrs(@Param("spuId") Long spuId);
+    /**
+     * 获取sku销售属性组合：例如黑色8G+256G
+     **/
+    List<String> getSaleAttrCombineBySkuId(@Param("skuId") Long skuId);
 }

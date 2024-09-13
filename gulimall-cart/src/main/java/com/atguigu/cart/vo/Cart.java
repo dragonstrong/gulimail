@@ -1,4 +1,6 @@
 package com.atguigu.cart.vo;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.List;
 /**
@@ -6,7 +8,7 @@ import java.util.List;
  * @Date 2024/09/11
  * @Description 购物车
  **/
-
+@Setter
 public class Cart {
     /**
      * 购物项

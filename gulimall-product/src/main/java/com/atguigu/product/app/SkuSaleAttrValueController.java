@@ -1,12 +1,14 @@
 package com.atguigu.product.app;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.utils.Result;
 import com.atguigu.product.entity.SkuSaleAttrValueEntity;
 import com.atguigu.product.service.SkuSaleAttrValueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -23,6 +25,16 @@ import java.util.Map;
 public class SkuSaleAttrValueController {
     @Autowired
     private SkuSaleAttrValueService skuSaleAttrValueService;
+    /**
+     * @description: 获取sku的销售属性组合
+     * @param:
+     * @param skuId
+     * @return: Result<List<String>>
+     **/
+    @GetMapping("/saleAttrs/{skuId}")
+    public Result<List<String>> getSkuSaleAttrsCombine(@PathVariable("skuId") Long skuId){
+        return skuSaleAttrValueService.getSkuSaleAttrsCombine(skuId);
+    }
 
     /**
      * 列表
