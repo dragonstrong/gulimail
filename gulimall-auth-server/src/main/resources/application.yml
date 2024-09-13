@@ -1,0 +1,42 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848  # 127.0.0.1
+      config:
+        import-check:
+          enabled: false
+  # redis
+  redis:
+    host: 192.168.30.128
+    port: 6379
+    password: 181181@Lq
+  cache:
+    type: redis  #缓存的类型
+    redis:
+      time-to-live: 60000   #过期时间，单位ms  即1min
+      use-key-prefix: true #使用key前缀
+      #key-prefix: CACHE_ #key前缀，表明这是缓存，和redis中的其他数据分开
+      cache-null-values: true  #是否缓存空值，防止缓存穿透
+
+  session:
+    store-type: redis #session保存在redis中
+  application:
+    name: gulimall-auth-server
+
+  ackson:
+    date-format: yyyy-MM-dd HH:mm:ss # 指定时间格式
+  thymeleaf:
+    cache: false #关闭thymeleaf缓存，方便开发期间看到实时效果
+    #prefix: classpath:/static/
+
+#服务端口
+server:
+  port: 20000
+  servlet:
+    session:
+      timeout: 30m #session过期时间30min
+logging:
+  level:
+    com.atguigu.product: debug
+

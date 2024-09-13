@@ -43,12 +43,8 @@ spring:
   thymeleaf:
     cache: false #关闭thymeleaf缓存，方便开发期间看到实时效果
     #prefix: classpath:/static/
-
-alibaba:
-  oss:
-    endpoint: https://oss-cn-shanghai.aliyuncs.com #Endpoint按实际Region填写。
-    accessKeyId: LTAI5tFTTUWqBbq8F9zzvhVb  #OSS_ACCESS_KEY_ID
-    accessKeySecret: 9EvG2ZhCor8ZutCWrccFzJLDtaxDtU #OSS_ACCESS_KEY_SECRET
+  session:
+    store-type: redis #指定Session存在redis
 
 
 
@@ -64,6 +60,9 @@ mybatis-plus:
 #服务端口
 server:
   port: 10000
+  servlet:
+    session:
+      timeout: 30m # session过期时间30min
 logging:
   level:
     com.atguigu.product: debug

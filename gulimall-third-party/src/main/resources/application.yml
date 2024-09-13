@@ -14,10 +14,15 @@ server:
   servlet:
     context-path: /third-party  #所有接口uri添加前缀
 
-#阿里云OSS存储
+#阿里云
 alibaba:
+  # OSS存储
   oss:
     endpoint: oss-cn-shanghai.aliyuncs.com #Endpoint按实际Region填写。
     accessKeyId: LTAI5tFTTUWqBbq8F9zzvhVb  #OSS_ACCESS_KEY_ID
     accessKeySecret: 9EvG2ZhCor8ZutCWrccFzJLDtaxDtU #OSS_ACCESS_KEY_SECRET
     bucket: gulimall-qianglong  #bucket (OSS存储空间名字)
+  # 短信发送
+  sms:
+    signName: 阿里云短信测试  #签名
+    templateCode: SMS_154950909  #模板

@@ -95,10 +95,11 @@
   					</b>
         <ul>
           <li>
-            <a href="/static//登录页面\index.html">你好，请登录</a>
+            <a th:if="${session.loginUser!=null}">欢迎：[[${session.loginUser.username}]]</a>
+            <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser==null}">你好，请登录</a>
           </li>
           <li>
-            <a href="/static//注册页面\index.html" class="li_2">免费注册</a>
+            <a href="http://auth.gulimall.com/register.html" th:if="${session.loginUser==null}" class="li_2">免费注册</a>
           </li>
           <span>|</span>
           <li>
@@ -243,10 +244,14 @@
                 <a href="/static/#"><img class="" src="/static/index/img/touxiang.png"></a>
               </div>
               <div class="user_info_show">
+                <a th:if="${session.loginUser!=null}">Hi,[[${session.loginUser.username}]]</a>
+                <a  th:if="${session.loginUser==null}">Hi, 欢迎来到!</a>
+                <!--
                 <p class="">Hi, 欢迎来到!</p>
+                -->
                 <p>
-                  <a href="/static/#" class="">登录</a>
-                  <a href="/static/#" class="">注册</a>
+                  <a th:if="${session.loginUser==null}" href="http://auth.gulimall.com/login.html" class="">登录</a>
+                  <a th:if="${session.loginUser==null}" href="http://auth.gulimall.com/register.html" class="">注册</a>
                 </p>
               </div>
             </div>

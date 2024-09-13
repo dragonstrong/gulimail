@@ -17,13 +17,19 @@ package com.atguigu.common.exception;
  *  12: 订单
  *  13: 购物车
  *  14: 物流
+ *  15: 用户
  *
  *
  */
 public enum BizCodeEnum {
     UNKNOW_EXCEPTION(10000,"系统未知异常"),
     VAILD_EXCEPTION(10001,"参数格式校验失败"),
-    PRODUCT_UP_EXCEPTION(11000,"商品上架异常");
+    VAILD_SMS_CODE_EXCEPTION(10002,"验证码获取频率太高，请稍后再试"),
+    PRODUCT_UP_EXCEPTION(11000,"商品上架异常"),
+    PHONE_EXIST_EXCEPTION(15000,"手机号已存在，注册失败"),
+    USERNAME_EXIST_EXCEPTION(15001,"用户名已存在，注册失败"),
+    USER_NOT_EXIST_EXCEPTION(15001,"用户不存在，登录失败"),
+    PASSWORD_INCORRECT_EXCEPTION(15001,"密码错误，登录失败");
 
     private int code;
     private String msg;

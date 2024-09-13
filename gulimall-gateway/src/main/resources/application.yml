@@ -62,11 +62,24 @@ spring:
             - Host=search.gulimall.com  #域名search.gulimall.com的都转到search服务
 
         # 域名转发规则,到product服务
-        - id: guliamll_host_route
+        - id: guliamll_product_route
           uri: lb://gulimall-product
           predicates:
             - Host=gulimall.com,item.gulimall.com  #域名gulimall.com的都转到product服务
 
+
+        # 域名转发规则,到gulimall-auth-server服务
+        - id: guliamll_auth_route
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Host=auth.gulimall.com  #域名auth.gulimall.com的都转到权限认证服务
+
+
+        # 域名转发规则,到gulimall-cart服务
+        - id: guliamll_cart_route
+          uri: lb://gulimall-cart
+          predicates:
+            - Host=cart.gulimall.com  #域名cart.gulimall.com的都转到购物车服务
 
 
   application:

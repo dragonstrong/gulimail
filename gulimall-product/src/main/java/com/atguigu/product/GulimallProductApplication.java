@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * 1、整合mybatis-plus (参考官方文档 https://baomidou.com/)
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  *
  **/
+
+@EnableRedisHttpSession  // 开启redis 作为httpsession
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 @EnableFeignClients(basePackages = "com.atguigu.product.feign")

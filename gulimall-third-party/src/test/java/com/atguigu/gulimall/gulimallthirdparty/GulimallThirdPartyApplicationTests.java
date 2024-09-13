@@ -1,5 +1,7 @@
 package com.atguigu.gulimall.gulimallthirdparty;
 import com.aliyun.oss.OSS;
+import com.atguigu.gulimall.gulimallthirdparty.component.SmsComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,10 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+@Slf4j
 @SpringBootTest
 class GulimallThirdPartyApplicationTests {
     @Autowired
     OSS oss;
+    @Autowired
+    SmsComponent smsComponent;
     @Value("${alibaba.oss.bucket}")
     private String bucket;
     /**
@@ -36,6 +41,16 @@ class GulimallThirdPartyApplicationTests {
         oss.putObject(bucket,objectName,inputStream);
         // 关闭OSSClient
         oss.shutdown();
+    }
+    /**
+     * @description: 测试短信发送
+     * @param:
+     * @return: void
+     **/
+
+    @Test
+    public void sendSms() throws Exception {
+        smsComponent.sendSms("13717782203","235678");
     }
 
 }
