@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jodd.util.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+@Slf4j
 @Service("spuInfoService")
 public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> implements SpuInfoService {
     @Autowired
@@ -301,6 +303,17 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
              *         }
              **/
 
+        }
+    }
+    @Override
+    public Result<SpuInfoEntity> getSpuInfoBySkuId(Long id) {
+        SkuInfoEntity skuInfo=skuInfoDao.selectById(id);
+        if(skuInfo!=null){
+            SpuInfoEntity spuInfo=getById(skuInfo.getSpuId());
+            return Result.ok(spuInfo);
+        }else{
+            log.error("不存在skuId={}的商品",id);
+            return Result.ok();
         }
     }
 }

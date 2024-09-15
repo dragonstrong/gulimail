@@ -1,12 +1,15 @@
 package com.atguigu.member.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.utils.Result;
+import com.atguigu.common.vo.MemberAddressVo;
 import com.atguigu.member.entity.MemberReceiveAddressEntity;
 import com.atguigu.member.service.MemberReceiveAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -25,6 +28,14 @@ public class MemberReceiveAddressController {
     private MemberReceiveAddressService memberReceiveAddressService;
 
     /**
+     * 根据会员id查收获地址列表
+     */
+    @GetMapping("/{memberId}/addresses")
+    public Result<List<MemberAddressVo>> getAddressListByMemberId(@PathVariable("memberId") Long memberId){
+        return memberReceiveAddressService.getAddressListByMemberId(memberId);
+    }
+
+    /**
      * 列表
      */
     @RequestMapping("/list")
@@ -40,7 +51,6 @@ public class MemberReceiveAddressController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("member:memberreceiveaddress:info")
     public R info(@PathVariable("id") Long id){
 		MemberReceiveAddressEntity memberReceiveAddress = memberReceiveAddressService.getById(id);
 

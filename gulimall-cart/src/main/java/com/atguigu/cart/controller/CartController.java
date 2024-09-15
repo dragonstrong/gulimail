@@ -2,13 +2,17 @@ package com.atguigu.cart.controller;
 import com.atguigu.cart.service.CartService;
 import com.atguigu.cart.vo.Cart;
 import com.atguigu.cart.vo.CartItem;
+import com.atguigu.common.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 /**
  * @Author qiang.long
  * @Date 2024/09/13
@@ -106,6 +110,17 @@ public class CartController {
     public String deleteItem(@RequestParam("skuId") Long skuId){
         cartService.deleteItem(skuId);
         return "redirect:http://cart.gulimall.com/cart.html"; // 重定向到购物车列表页
+    }
+
+    /**
+     * @description: 获取当前用户被选中的购物项
+     * @param:
+     * @return: Result<List<CartItem>>
+     **/
+    @ResponseBody
+    @GetMapping("/currentUserCartItems")
+    public Result<List<CartItem>> getCurrentUserCheckedCartItems(){
+        return cartService.getCurrentUserCheckedCartItems();
     }
 
 }

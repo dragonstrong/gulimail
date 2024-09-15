@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -98,7 +99,7 @@ public class CartServiceImpl implements CartService{
         UserInfoVo userInfoVo= CartInterceptor.threadLocal.get();
         if(userInfoVo.getUserId()!=null){ // 已登录：用户购物车  且要考虑从游客购物车到用户购物车的切换（刚登录需要合并游客购物车中的商品）
             // 1. 判断临时购物车中有无数据：判断是否从游客切换到登录
-            String cartKeyInTour= CartConstant.CART_OREFIX+userInfoVo.getUserKey();
+            String cartKeyInTour= CartConstant.CART_PREFIX+userInfoVo.getUserKey();
             List<CartItem> cartItemsInTour=getCartItems(cartKeyInTour);
             // 2. 游客购物车有商品：合并到用户购物车
             if(cartItemsInTour!=null){
@@ -107,13 +108,13 @@ public class CartServiceImpl implements CartService{
                 }
             }
             // 3. 获取用户购物车
-            String cartKeyInLogin= CartConstant.CART_OREFIX+userInfoVo.getUserId();
+            String cartKeyInLogin= CartConstant.CART_PREFIX+userInfoVo.getUserId();
             List<CartItem> cartItemsInLogin=getCartItems(cartKeyInLogin);
             cart.setItems(cartItemsInLogin);
             // 3. 清除临时购物车
             clearCart(cartKeyInTour);
         }else{ // 未登录：游客购物车
-            String cartKey= CartConstant.CART_OREFIX+userInfoVo.getUserKey();
+            String cartKey= CartConstant.CART_PREFIX+userInfoVo.getUserKey();
             cart.setItems(getCartItems(cartKey));
         }
         return cart;
@@ -125,9 +126,9 @@ public class CartServiceImpl implements CartService{
         UserInfoVo userInfoVo =CartInterceptor.threadLocal.get();
         String cartKey="";
         if(userInfoVo.getUserId()!=null){ // 已登录：使用用户购物车
-            cartKey=CartConstant.CART_OREFIX+userInfoVo.getUserId();
+            cartKey=CartConstant.CART_PREFIX+userInfoVo.getUserId();
         }else{ // 未登录：使用临时（游客）购物车
-            cartKey=CartConstant.CART_OREFIX+userInfoVo.getUserKey();
+            cartKey=CartConstant.CART_PREFIX+userInfoVo.getUserKey();
         }
         BoundHashOperations<String,Object,Object> ops=redisTemplate.boundHashOps(cartKey);
         return ops;
@@ -174,5 +175,30 @@ public class CartServiceImpl implements CartService{
     public void deleteItem(Long skuId) {
         BoundHashOperations<String,Object,Object> ops=getCartOps();
         ops.delete(skuId.toString());
+    }
+    @Override
+    public Result<List<CartItem>> getCurrentUserCheckedCartItems() {
+        UserInfoVo userInfoVo=CartInterceptor.threadLocal.get();
+        if(userInfoVo.getUserId()==null){ // 未登录直接返回
+            return Result.ok();
+        }else{
+            String cartKey=CartConstant.CART_PREFIX+ userInfoVo.getUserId();
+            List<CartItem> cartItems=getCartItems(cartKey);
+            if(cartItems==null){
+                return Result.ok();
+            }else{
+                List<CartItem> checkedItems=cartItems.stream().filter(item->item.getCheck()).map(cartItem -> {
+                    // 查询最新价格：redis里的是加入购物车时的价格
+                    Result<BigDecimal> r=productFeignService.getPrice(cartItem.getSkuId());
+                    if(r.getCode()==0){
+                        cartItem.setPrice(r.getData());
+                    }else {
+                        log.error("远程调用gulimall-product查商品最新价格失败，skuId={}",cartItem.getSkuId());
+                    }
+                    return cartItem;
+                }).collect(Collectors.toList());
+                return Result.ok(checkedItems);
+            }
+        }
     }
 }

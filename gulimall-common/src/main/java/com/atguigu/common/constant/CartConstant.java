@@ -16,5 +16,5 @@ public class CartConstant {
     /**
      * 购物车key前缀(redis)
      **/
-    public static final String CART_OREFIX="gulimall:cart:";
+    public static final String CART_PREFIX="gulimall:cart:";
 }

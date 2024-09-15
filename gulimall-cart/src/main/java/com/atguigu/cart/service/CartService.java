@@ -1,6 +1,9 @@
 package com.atguigu.cart.service;
 import com.atguigu.cart.vo.Cart;
 import com.atguigu.cart.vo.CartItem;
+import com.atguigu.common.utils.Result;
+
+import java.util.List;
 /**
  * @Author qiang.long
  * @Date 2024/09/13
@@ -34,4 +37,8 @@ public interface CartService {
      * 删除购物车中的购物项
      **/
     void deleteItem(Long skuId);
+    /**
+     * 获取当前用户被选中的购物项
+     **/
+    Result<List<CartItem>> getCurrentUserCheckedCartItems();
 }

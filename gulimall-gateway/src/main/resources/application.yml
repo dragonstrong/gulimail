@@ -81,6 +81,12 @@ spring:
           predicates:
             - Host=cart.gulimall.com  #域名cart.gulimall.com的都转到购物车服务
 
+        # 域名转发规则,到gulimall-order服务
+        - id: guliamll_order_route
+          uri: lb://gulimall-order
+          predicates:
+            - Host=order.gulimall.com  #域名order.gulimall.com的都转到订单服务
+
 
   application:
     name: gulimall-gateway

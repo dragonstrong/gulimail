@@ -1,5 +1,6 @@
 package com.atguigu.product.service;
 import com.atguigu.common.utils.PageUtils;
+import com.atguigu.common.utils.Result;
 import com.atguigu.product.entity.SpuInfoEntity;
 import com.atguigu.product.vo.SpuSaveVo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -29,5 +30,10 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
      * @description: spu上架
      **/
     void up(Long spuId);
+    /**
+     * @description: 根据skuid获取spu信息
+     * @param id skuId
+     **/
+    Result<SpuInfoEntity> getSpuInfoBySkuId(Long id);
 }
 

@@ -18,6 +18,7 @@ package com.atguigu.common.exception;
  *  13: 购物车
  *  14: 物流
  *  15: 用户
+ *  16: 库存
  *
  *
  */
@@ -28,8 +29,9 @@ public enum BizCodeEnum {
     PRODUCT_UP_EXCEPTION(11000,"商品上架异常"),
     PHONE_EXIST_EXCEPTION(15000,"手机号已存在，注册失败"),
     USERNAME_EXIST_EXCEPTION(15001,"用户名已存在，注册失败"),
-    USER_NOT_EXIST_EXCEPTION(15001,"用户不存在，登录失败"),
-    PASSWORD_INCORRECT_EXCEPTION(15001,"密码错误，登录失败");
+    USER_NOT_EXIST_EXCEPTION(15002,"用户不存在，登录失败"),
+    PASSWORD_INCORRECT_EXCEPTION(15003,"密码错误，登录失败"),
+    NO_STOCK_EXCEPTION(16001,"密码错误，登录失败");
 
     private int code;
     private String msg;

@@ -1,11 +1,13 @@
 package com.atguigu.product.app;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.utils.Result;
 import com.atguigu.product.entity.SkuInfoEntity;
 import com.atguigu.product.service.SkuInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -75,6 +77,14 @@ public class SkuInfoController {
 		skuInfoService.removeByIds(Arrays.asList(skuIds));
 
         return R.ok();
+    }
+    /**
+     * 获取sku最新价格
+     */
+    @GetMapping("/{skuId}/getPrice")
+    public Result<BigDecimal> getPrice(@PathVariable("skuId") Long skuId){
+        SkuInfoEntity skuInfo=skuInfoService.getById(skuId);
+        return Result.ok(skuInfo.getPrice());
     }
 
 }

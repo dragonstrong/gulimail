@@ -1,6 +1,7 @@
 package com.atguigu.product.app;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.utils.Result;
 import com.atguigu.product.entity.SpuInfoEntity;
 import com.atguigu.product.service.SpuInfoService;
 import com.atguigu.product.vo.SpuSaveVo;
@@ -41,6 +42,17 @@ public class SpuInfoController {
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = spuInfoService.queryPageByContion(params);
         return R.ok().put("page", page);
+    }
+
+    /**
+     * @description: 根据skuid获取spu信息
+     * @param:
+     * @param id skuId
+     * @return: Result<SpuInfoEntity>
+     **/
+    @GetMapping("/skuId/{id}")
+    public Result<SpuInfoEntity> getSpuInfoBySkuId(@PathVariable("id") Long id){
+        return spuInfoService.getSpuInfoBySkuId(id);
     }
 
 

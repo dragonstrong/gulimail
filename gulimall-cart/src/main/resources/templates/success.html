@@ -26,7 +26,7 @@
 
         <ul class="hd_wrap_right">
         <li class="forel">
-            <a th:if="${session.loginUser!=null}" >[[${session.loginUser.username}]]</a>&nbsp;
+            <a th:if="${session.loginUser!=null}" style="width: 100px">[[${session.loginUser.username}]]</a>&nbsp;
             <a th:if="${session.loginUser==null}" href="http://auth.gulimall.com/login.html" class="link_login">你好,请登录</a>&nbsp;
             <a th:if="${session.loginUser==null}" href="http://auth.gulimall.com/register.html" class="link_regist">免费注册</a>
         </li>
@@ -91,7 +91,7 @@
         <div class="clr"></div>
         <div class="bg_shop">
         <a class="btn-tobback" th:href="'http://item.gulimall.com/'+${item.skuId}+'.html'">查看商品详情</a>
-        <a class="btn-addtocart"  href="http://cart.gmall.com:8087/cartList" id="GotoShoppingCart"><b></b>去购物车结算</a>
+        <a class="btn-addtocart"  href="http://cart.gulimall.com/cart.html" id="GotoShoppingCart"><b></b>去购物车结算</a>
    </div>
     </div>
     </div>

@@ -1,8 +1,11 @@
 package com.atguigu.ware.controller;
+import com.atguigu.common.exception.BizCodeEnum;
+import com.atguigu.common.exception.NoStockExecption;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.utils.Result;
 import com.atguigu.common.vo.SkuHasStockVo;
+import com.atguigu.common.vo.WareSkuLockVo;
 import com.atguigu.ware.entity.WareSkuEntity;
 import com.atguigu.ware.service.WareSkuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,20 @@ public class WareSkuController {
         return R.ok().put("page", page);
     }
 
+
+    /**
+     * @description: 为订单锁库存
+     * @param wareSkuLockVo
+     **/
+    @PostMapping("/lock/order")
+    public Result<Boolean> orderLockStock(@RequestBody WareSkuLockVo wareSkuLockVo){
+        try {
+            wareSkuService.orderLockStock(wareSkuLockVo);
+            return Result.ok(true);
+        }catch (NoStockExecption e){
+            return Result.error(BizCodeEnum.NO_STOCK_EXCEPTION);
+        }
+    }
 
     /**
      * 信息

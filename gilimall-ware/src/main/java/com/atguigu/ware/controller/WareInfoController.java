@@ -1,6 +1,8 @@
 package com.atguigu.ware.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.utils.Result;
+import com.atguigu.common.vo.FareVo;
 import com.atguigu.ware.entity.WareInfoEntity;
 import com.atguigu.ware.service.WareInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,17 @@ import java.util.Map;
 public class WareInfoController {
     @Autowired
     private WareInfoService wareInfoService;
+
+    /**
+     * @description: 获取收货地址+运费信息
+     * @param:
+     * @param addressId 收货地址id
+     * @return: Result<BigDecimal>
+     **/
+    @GetMapping("/fare")
+    public Result<FareVo> getFreight(@RequestParam("addressId") Long addressId){
+        return wareInfoService.getFreight(addressId);
+    }
 
     /**
      * 仓库维护-按条件检索
