@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -125,6 +126,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         stringRedisTemplate.opsForValue().set(redisOrderKey,token,30, TimeUnit.MINUTES); // 30分钟内检验令牌有效
         return confirmVo;
     }
+    @GlobalTransactional
     @Transactional
     @Override
     public SubmitOrderRespVo submitOrder(OrderSubmitVo orderSubmitVo) {
@@ -136,7 +138,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         // lua脚本: 执行后返回0失败  1成功
         String script="if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
         String orderToken=orderSubmitVo.getOrderToken(); //前端传来的令牌
-        Long result=stringRedisTemplate.execute(new DefaultRedisScript<Long>(script,Long.class), Arrays.asList(OrderConstant.USER_ORDER_TOKEN_PREFIX+member.getId()),orderToken);
+        Long result=stringRedisTemplate.execute(new DefaultRedisScript<Long>(script,Long.class),
+                Arrays.asList(OrderConstant.USER_ORDER_TOKEN_PREFIX+member.getId()),orderToken);
         if(result==0L){ // 令牌检验失败
             submitOrderRespVo.setCode(OrderSubmitErrorEnum.TOKEN_INVALID.getCode());
             return submitOrderRespVo;
@@ -163,19 +166,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 Result<Boolean> r=wareFeignService.orderLockStock(wareSkuLockVo);
                 if(r.getCode()==0){ // 锁定成功
                     submitOrderRespVo.setOrder(orderCreateVo.getOrder());
+                    // TODO 分布式事务：远程调用成功后发生异常 远程服务回滚？
+                    int i=10/0;
                     return submitOrderRespVo;
                 }else{ // 锁定失败
                     log.error("远程调用gulimall-ware锁定库存失败");
                     submitOrderRespVo.setCode(OrderSubmitErrorEnum.STOCK_LOCK_FAIL.getCode());
-                    throw new NoStockExecption();  // 不手动抛异常：库存锁定失败订单不会回滚
-                    return submitOrderRespVo;
+                    throw new NoStockExecption();  // 不手动抛异常：库存锁定失败订单不回滚
                 }
             }else{
                 submitOrderRespVo.setCode(OrderSubmitErrorEnum.PRICE_CKECK_FAIL.getCode()); //验价失败
                 log.error("检验订单价格失败，payAmount={}，payPrice={}",payAmount,payPrice);
                 return submitOrderRespVo;
             }
-
         }
     }
 

@@ -1,5 +1,6 @@
 package com.atguigu.order.web;
 import com.alibaba.fastjson.JSON;
+import com.atguigu.common.exception.NoStockExecption;
 import com.atguigu.order.enumration.OrderSubmitErrorEnum;
 import com.atguigu.order.service.OrderService;
 import com.atguigu.order.vo.OrderConfirmVo;
@@ -46,16 +47,21 @@ public class OrderWebController {
         // 创建订单，验令牌，验价格，锁库存
 
         // 下单成功跳到支付页
-
-        // 下单失败回到订单确认页，重新确认订单信息
-        SubmitOrderRespVo submitOrderRespVo=orderService.submitOrder(orderSubmitVo);
-        log.info("订单提交的数据：{}", JSON.toJSONString(orderSubmitVo));
-        if(submitOrderRespVo.getCode()==0){ // 下单成功：到支付页
-            model.addAttribute("submitOrderResp",submitOrderRespVo);
-            return "pay";
-        }else{
-            Integer errorCode=submitOrderRespVo.getCode();
-            String errorMsg="下单失败，"+OrderSubmitErrorEnum.getMsgByCode(errorCode);
+        try {
+            // 下单失败回到订单确认页，重新确认订单信息
+            SubmitOrderRespVo submitOrderRespVo=orderService.submitOrder(orderSubmitVo);
+            log.info("订单提交的数据：{}", JSON.toJSONString(orderSubmitVo));
+            if(submitOrderRespVo.getCode()==0){ // 下单成功：到支付页
+                model.addAttribute("submitOrderResp",submitOrderRespVo);
+                return "pay";
+            }else{
+                Integer errorCode=submitOrderRespVo.getCode();
+                String errorMsg="下单失败，"+OrderSubmitErrorEnum.getMsgByCode(errorCode);
+                redirectAttributes.addFlashAttribute("msg",errorMsg); // 给前端提示错误消息
+                return "redirect:http://order.gulimall.com/toTrade";
+            }
+        }catch (NoStockExecption e){
+            String errorMsg="下单失败，"+OrderSubmitErrorEnum.STOCK_LOCK_FAIL.getVal();
             redirectAttributes.addFlashAttribute("msg",errorMsg); // 给前端提示错误消息
             return "redirect:http://order.gulimall.com/toTrade";
         }

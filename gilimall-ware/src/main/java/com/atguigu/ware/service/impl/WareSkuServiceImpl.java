@@ -111,7 +111,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             for(SkuWareHasStock wareHasStock:skuWareHasStocks){
                 boolean locked=false;
                 List<Long> wardIds=wareHasStock.getWareIds();
-                if(wardIds==null||wardIds.isEmpty()){ // 改商品没有库存
+                if(wardIds==null||wardIds.isEmpty()){ // 该商品没有库存
                     lockedAll=false;
                     throw new NoStockExecption(wareHasStock.getSkuId());
                 }else{
