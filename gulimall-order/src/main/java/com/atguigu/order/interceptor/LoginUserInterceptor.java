@@ -1,6 +1,7 @@
 package com.atguigu.order.interceptor;
 import com.atguigu.common.constant.AuthServerConstant;
 import com.atguigu.common.vo.MemberResponseVo;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,13 @@ public class LoginUserInterceptor implements HandlerInterceptor {
      **/
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 查订单状态：不要求登录，直接放行
+        String uri=request.getRequestURI();
+        boolean match=new AntPathMatcher().match("/order/order/status/**",uri);
+        if(match){
+            return true;
+        }
+
         HttpSession httpSession=request.getSession();  //获取sring session包装后的session
         MemberResponseVo member=(MemberResponseVo)httpSession.getAttribute(AuthServerConstant.LOGIN_USER);
         if(member!=null){ // 登录放行

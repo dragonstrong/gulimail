@@ -1,5 +1,6 @@
 package com.atguigu.order.service;
 import com.atguigu.common.utils.PageUtils;
+import com.atguigu.common.utils.Result;
 import com.atguigu.order.entity.OrderEntity;
 import com.atguigu.order.vo.OrderConfirmVo;
 import com.atguigu.order.vo.OrderSubmitVo;
@@ -26,5 +27,13 @@ public interface OrderService extends IService<OrderEntity> {
      * @description: 下单
      **/
     SubmitOrderRespVo submitOrder(OrderSubmitVo orderSubmitVo);
+    /**
+     * @description: 获取订单状态
+     **/
+    Result<OrderEntity> getOrderStatus(String orderSn);
+    /**
+     * @description: 定时关单
+     **/
+    void closeOrder(OrderEntity order);
 }
 

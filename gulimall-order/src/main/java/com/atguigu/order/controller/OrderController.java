@@ -1,6 +1,7 @@
 package com.atguigu.order.controller;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.utils.Result;
 import com.atguigu.order.entity.OrderEntity;
 import com.atguigu.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,17 @@ import java.util.Map;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+
+    /**
+     * @description: 获取订单状态
+     * @param:
+     * @param orderSn 订单号
+     * @return: com.atguigu.common.utils.Result<java.lang.Integer>
+     **/
+    @GetMapping("/status/{orderSn}")
+    public Result<OrderEntity> getOrderStatus(@PathVariable("orderSn") String orderSn){
+        return orderService.getOrderStatus(orderSn);
+    }
 
     /**
      * 列表

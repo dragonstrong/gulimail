@@ -63,6 +63,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         );
         return new PageUtils(page);
     }
+    // TODO 后台并发不高，适合用seata控分布式事务
     @Transactional
     @Override
     public void saveSpuInfo(SpuSaveVo spuSaveVo) {

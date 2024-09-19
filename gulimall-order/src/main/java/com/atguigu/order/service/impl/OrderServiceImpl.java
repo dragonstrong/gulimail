@@ -25,8 +25,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -62,6 +63,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     StringRedisTemplate stringRedisTemplate;
     @Autowired
     OrderItemService orderItemService;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<OrderEntity> page = this.page(
@@ -126,7 +129,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         stringRedisTemplate.opsForValue().set(redisOrderKey,token,30, TimeUnit.MINUTES); // 30分钟内检验令牌有效
         return confirmVo;
     }
-    @GlobalTransactional
+    //@GlobalTransactional
     @Transactional
     @Override
     public SubmitOrderRespVo submitOrder(OrderSubmitVo orderSubmitVo) {
@@ -166,8 +169,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 Result<Boolean> r=wareFeignService.orderLockStock(wareSkuLockVo);
                 if(r.getCode()==0){ // 锁定成功
                     submitOrderRespVo.setOrder(orderCreateVo.getOrder());
-                    // TODO 分布式事务：远程调用成功后发生异常 远程服务回滚？
-                    int i=10/0;
+                    // TODO 分布式事务：远程调用成功后发生异常 如何让远程事务
+                    // int i=10/0;
+                    // TODO 下单成功，发送消息给MQ（为了后面定时关单）
+                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",orderCreateVo.getOrder());
                     return submitOrderRespVo;
                 }else{ // 锁定失败
                     log.error("远程调用gulimall-ware锁定库存失败");
@@ -181,7 +186,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             }
         }
     }
-
+    @Override
+    public Result<OrderEntity> getOrderStatus(String orderSn) {
+        OrderEntity order=getBaseMapper().selectOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+        order.setModifyTime(null);
+        return Result.ok(order);
+    }
+    /**
+     * @description: 关闭订单
+     * @param:
+     * @param order
+     * @return: void
+     **/
+    @Override
+    public void closeOrder(OrderEntity order) {
+        OrderEntity orderInDB=getBaseMapper().selectById(order.getId());
+        if(orderInDB!=null&&orderInDB.getStatus()==OrderStatusEnum.NEW.getCode()){ // 订单在数据库里存在且状态为未支付（到队列已超时）
+            // 更新状态
+            OrderEntity update=new OrderEntity();
+            update.setId(orderInDB.getId());
+            update.setStatus(OrderStatusEnum.CLOSED.getCode());
+            update.setModifyTime(new Date());
+            updateById(update);
+            // 消息积压、订单服务卡顿宕机等原因导致订单关闭消息未及时消费，
+            // 库存解锁晚于订单关闭，订单状态是新建导致解锁库存失败，且消息被消费移除永久无法解锁库存
+            // -->> 主动往"stock.release.stock.queue"发送消息订单已关闭，库存服务收到后立即解锁对应的库存
+            OrderVo orderVo=new OrderVo();
+            BeanUtils.copyProperties(orderInDB,orderVo);
+            rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderVo);
+        }
+    }
     /**
      * @description: 创建订单
      * @param:
