@@ -30,8 +30,6 @@ public class OrderCloseListener {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(),false); // 关单成功，从队列移除消息
         }catch (Exception e){ // 关单出现异常，消息重新投放到消息队列
             channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
-
         }
-
     }
 }

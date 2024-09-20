@@ -57,7 +57,7 @@ public class StockReleaseListener {
          **/
 
         /**
-         * 情况2： detailId在数据库wms_ware_order_task_detail表中存在,且状态为已锁定（解锁过的不重复解锁）：库存锁定成功，此时需要根据订单情况判断是否需要解锁
+         * 情况2： detailId在数据库wms_ware_order_task_detail表中存在,且状态为已锁定（解锁过的不重复解锁）：库存本身锁定成功，此时需要根据订单情况判断是否需要解锁
          *      1) oms_order表中无该订单： 订单出问题自己回滚了，要解锁库存
          *      2) oms_order表中有该订单： 订单状态为已取消，要解锁库存；其他情况表明一切正常，无需解锁。
          **/
@@ -102,7 +102,7 @@ public class StockReleaseListener {
             WareOrderTaskEntity wareOrderTaskEntity=wareOrderTaskService.getOrderTaskByOrderSn(orderSn);
             // 查库存工作单详情，找到未解锁的 ，防止重复解锁
             List<WareOrderTaskDetailEntity> unlocked =wareOrderTaskDetailService.list(new QueryWrapper<WareOrderTaskDetailEntity>().eq("task_id",wareOrderTaskEntity.getId()).eq("lock_status",LockStatusEnum.LOCKED.getCode()));
-            unLockStockBatch(unlocked);   // 幂等：不担心消重复发，只解锁库存工作单状态为锁定的库存（解锁后就将状态改为已解锁，后续无需解锁）
+            unLockStockBatch(unlocked);   // 幂等：不用担心消重复发，只解锁库存工作单状态为锁定的库存（解锁后就将状态改为已解锁，后续无需解锁）
             channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);  // 解锁成功从队列移除
         }catch (Exception e){
             channel.basicReject(message.getMessageProperties().getDeliveryTag(),true); //解锁出现异常将消息重新投放到队列

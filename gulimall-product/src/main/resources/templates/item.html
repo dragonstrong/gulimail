@@ -15,7 +15,7 @@
 			<!--品牌官方网站-->
 					<div class="min">
 						<ul class="header_ul_left">
-							<li class="glyphicon glyphicon-home"> <a href="/static/item/shouye.html" class="aa">京东首页</a></li>
+							<li class="glyphicon glyphicon-home"> <a href="http://gulimall.com" class="aa">商城首页</a></li>
 							<li class="glyphicon glyphicon-map-marker"> <a href="/static/item/javascript:;">北京</a>
 								<ol id="beijing">
 									<li style="background: red;"><a href="/static/item/javascript:;" style="color: white;">北京</a></li>
@@ -60,8 +60,8 @@
 							<a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser==null}" class="aa">你好，请登录</a>
 							<a th:if="${session.loginUser!=null}" class="aa" style="width: 100px">[[${session.loginUser.username}]]</a>
 							<li th:if="${session.loginUser==null}"><a href="http://auth.gulimall.com/register.html" style="color: red;">免费注册</a> |</li>
-							<li><a href="/static/item/javascript:;" class="aa">我的订单</a> |</li>
-							<li class="jingdong"><a href="/static/item/javascript:;">我的京东</a><span class="glyphicon glyphicon-menu-down">|</span>
+							<li><a href="http://order.gulimall.com/list.html" class="aa">我的订单</a> |</li>
+							<li class="jingdong"><a href="/static/item/javascript:;">我的商城</a><span class="glyphicon glyphicon-menu-down">|</span>
 								<ol class="jingdong_ol">
 									<li><a href="/static/item/javascript:;">待处理订单</a></li>
 									<li><a href="/static/item/javascript:;">消息</a></li>
@@ -77,7 +77,7 @@
 								</ol>
 							</li>
 
-							<li><a href="/static/item/javascript:;" class="aa">京东会员</a> |</li>
+							<li><a href="/static/item/javascript:;" class="aa">谷粒会员</a> |</li>
 							<li><a href="/static/item/javascript:;" class="aa">企业采购</a> |</li>
 							<li class="fuwu"><a href="/static/item/javascript:;">客户服务</a><span class="glyphicon glyphicon-menu-down"></span> |
 								<ol class="fuwu_ol">
@@ -252,7 +252,7 @@
 				<nav>
 				<div class="nav_min">
 					<div class="nav_top">
-						<div class="nav_top_one"><a href="http://gulimall.com"><img src="/static/item/img/111.png"/></a></div>
+						<div class="nav_top_one"><a href="http://gulimall.com"><img src="/static/login/JD_img/logo.jpg"/></a></div>
 						<div class="nav_top_two"><input type="text"/><button>搜索</button></div>
 						<div class="nav_top_three"><a href="http://cart.gulimall.com/cart.html">我的购物车</a><span class="glyphicon glyphicon-shopping-cart"></span>
 							<div class="nav_top_three_1">
@@ -375,7 +375,7 @@
 					<ul class="contact-ul">
 						<li>
 							<a href="/static/item/#">
-								华为京东自营官方旗舰店
+								华为自营官方旗舰店
 							</a>
 
 							<span class="contact-sp">
@@ -499,7 +499,7 @@
 						</div>
 						<div class="box-summary clear">
 							<ul>
-								<li>京东价</li>
+								<li>售价</li>
 								<li>
 									<span>￥</span>
 									<span th:text="${#numbers.formatDecimal(item.info.price,3,2)}">4499.00</span>
@@ -1191,7 +1191,7 @@
 					</li>
 					<li>|</li>
 					<li>
-						<a href="/static/item/##">手机京东</a>
+						<a href="/static/item/##">手机商城</a>
 					</li>
 					<li>|</li>
 					<li>

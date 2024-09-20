@@ -169,8 +169,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 Result<Boolean> r=wareFeignService.orderLockStock(wareSkuLockVo);
                 if(r.getCode()==0){ // 锁定成功
                     submitOrderRespVo.setOrder(orderCreateVo.getOrder());
-                    // TODO 分布式事务：远程调用成功后发生异常 如何让远程事务
-                    // int i=10/0;
+                    // TODO 分布式事务：模拟远程调用成功后发生异常 让远程事务回滚
+                    //int i=10/0;
                     // TODO 下单成功，发送消息给MQ（为了后面定时关单）
                     rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",orderCreateVo.getOrder());
                     return submitOrderRespVo;
@@ -189,7 +189,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public Result<OrderEntity> getOrderStatus(String orderSn) {
         OrderEntity order=getBaseMapper().selectOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
-        order.setModifyTime(null);
+        //order.setModifyTime(null);
         return Result.ok(order);
     }
     /**
