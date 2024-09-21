@@ -14,7 +14,7 @@
 
 ## 1.  消息队列+最终一致性方案控分布式事务（高并发场景）
 
-针对提交订单场景：下定单操作中订单服务要在数据库中创建订单表、订单详情表，并远程调库存服务锁定库存（修改商品库存表），针对整个大事务，如果确保数据一致性？比如容易出现订单业务发生异常订库存不滚的情况，以及超时关单如何实现。
+针对提交订单场景：下单时订单服务要创建订单表、订单详情表，并远程调库存服务锁定库存（修改商品库存表），对整个大事务，由于被调的库存服务无法感知订单服务成功与否，容易出现订单服务发生异常后订单滚而库存不滚的情况，从而无法保证分布式事务的数据一致性（分布式事务要求整体失败后所有小事务一起回滚）。常见的分布式事务解决方案有两阶段提交协议、TCC，但它们都无法应对高并发场景，下面使用MQ实现分布式事务数据的最终一致性。
 
 ![image-20240920175950581](assets/image-20240920175950581.png)
 
@@ -26,17 +26,47 @@
 
 
 
+order.delay.queue队列参数：
+
+```java
+@Bean
+public Queue orderDelayQueue(){
+    Map<String, Object> arguments=new HashMap<>();
+    arguments.put("x-dead-letter-exchange","order-event-exchange");
+    arguments.put("x-dead-letter-routing-key","order.release.order");
+    arguments.put("x-message-ttl",60000); // 单位ms ，即1min
+    Queue queue=new Queue("order.delay.queue", true,false,false,arguments);
+    return queue;
+}
+```
+
+stock.delay.queue队列参数：
+
+```java
+@Bean
+public Queue stockDelayQueue(){
+    Map<String, Object> arguments=new HashMap<>();
+    arguments.put("x-dead-letter-exchange","stock-event-exchange");
+    arguments.put("x-dead-letter-routing-key","stock.release");
+    arguments.put("x-message-ttl",120000); // 2min
+    Queue queue=new Queue("stock.delay.queue", true,false,false,arguments);
+    return queue;
+}
+```
+
+
+
 分布式事务常见问题及解决方案
 
 **问题1：超时关单如何实现？**
 
-答：下单成功后，订单服务往延时队列order.delay.queue中发消息OrderVo，延时队列设置30min过期，因此30min后消息会经order-event-exchange交换器到达队列order.release.order.queue，同时监听该队列里的OrderVo消息，收到消息后就触发handleOrderClose关闭订单逻辑。
+答：下单成功后，订单服务往延时队列order.delay.queue中发消息OrderVo，延时队列设置30min过期，因此30min后消息会经order-event-exchange交换器到达队列order.release.order.queue，同时监听该队列里的OrderVo消息，收到消息后就触发handleOrderClose关单逻辑。
 
 ![image-20240919174038996](assets/image-20240919174038996.png)
 
 
 
-监听队列，关单逻辑：若订单此时还未支付就表明已超时，将订单状态由未支付更改为已关闭。关单出现任何异常都会将消息重新入队。
+监听队列order.release.order.queue，关单：若订单此时还未支付就表明已超时，将订单状态由未支付更改为已关闭。关单出现任何异常都会将消息重新入队。
 
 ![image-20240919174535571](assets/image-20240919174535571.png)
 
@@ -495,7 +525,7 @@ public class StockReleaseListener {
 
 - 1min后
 
-订单过期，orderReleaseOrderQueue队列收到关闭订单消息，触发handleOrderClose关单逻辑:  将订单状态变为已关闭，同时向stock.release.stock.queue队列发送消息要求解锁库存，库存服务收到消息后触发解锁库存逻辑handleOrderCloseRelease
+订单过期，order.release.order.queue队列收到关闭订单消息，触发handleOrderClose关单逻辑:  将订单状态变为已关闭，同时向stock.release.stock.queue队列发送消息要求解锁库存，库存服务收到消息后触发解锁库存逻辑handleOrderCloseRelease
 
 ![image-20240919184348586](assets/image-20240919184348586.png)
 
@@ -519,7 +549,7 @@ public class StockReleaseListener {
 
 - 2min后
 
-stock.delay.queue队列里的消息过期并抵达stock.release.stock.queue，触发库存解锁逻辑handleStockLockedRelease：但由于库存工作单状态为已解锁，不再重复解锁。队列中消息全部被消费。
+stock.delay.queue队列里的消息过期并抵达stock.release.stock.queue，触发库存解锁逻辑handleStockLockedRelease：但由于库存工作单状态为已解锁，不再重复解锁。队列中消息全部被消费移除。
 
 ![image-20240919184443161](assets/image-20240919184443161.png)
 
@@ -1415,7 +1445,7 @@ public class MallSearchServiceImpl implements MallSearchService {
 
 ![image-20240920171649343](assets/image-20240920171649343.png)
 
-其他检索条件效果见演示视频。
+其他检索效果见演示视频。
 
 ## 4.商品详情-异步任务编排
 
@@ -1424,7 +1454,7 @@ public class MallSearchServiceImpl implements MallSearchService {
 商品详情接口需要查询的信息：
 
 - 任务1：sku基本信息 pms_sku_info
-- 任务2：spu介绍信息  pms_spu_images pms_spu_info
+- 任务2：所属spu介绍信息  pms_spu_info_desc
 - 任务3：spu销售属性组合  pms_attr pms_product_attr_value
 - 任务4：spu规格参数 pms_product_attr_value
 - 任务5：sku图片信息 pms_sku_images
@@ -1448,7 +1478,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         },threadPoolExecutor);
         // 任务2、3、4都必须等任务1执行完再执行
         CompletableFuture<Void> descFuture=infoFuture.thenAcceptAsync(res->{
-            // 任务2：spu介绍信息  pms_spu_images pms_spu_info
+            // 任务2：spu介绍信息  pms_spu_info_desc
             SpuInfoDescEntity spuInfoDescEntity =spuInfoDescService.getById(res.getSpuId());
             skuItemVo.setDesp(spuInfoDescEntity);
         },threadPoolExecutor);
@@ -1673,7 +1703,76 @@ gulimall-product、gulimall-search都要开启spring session:
 
 
 
+##### 5.3.4.6 Spring Session原理
 
+（1) @EnableRedisHttpSession导入@RedisHttpSessionConfiguration配置
+
+- 给容器中添加一个组件RedisIndexedSessionRepository：session的增删改查都是借用redis 的DAO层 来做
+
+![image-20240913140017424](assets/image-20240913140017424-1726898225015-1.png)
+
+![image-20240921135529853](assets/image-20240921135529853.png)
+
+
+
+![image-20240913140245220](assets/image-20240913140245220-1726898225016-2.png)
+
+- RedisHttpSessionConfiguration继承SpringHttpSessionConfiguration
+  - 其初始化方法中设置序列化器，并且有监听session的Bean
+  - 最关键的是**<font color=red>过滤器SessionRepositoryFilter：每个请求进来都要经过Filter</font>**
+    - 创建的时候，就自动从容器中获取到RedisIndexedSessionRepository
+    - 关键理解SessionRepositoryFilter的**<font color=red>doFilterInternal</font>**方法：
+      - 原始的request、response都被包装：SessionRepositoryRequestWrapper、SessionRepositoryResponseWrapper
+      - 以后获取session:  request.getSession()
+      - wrappedRequest.getSession()； ====》RedisIndexedSessionRepository中获取到
+- 体现**<font color=red>装饰者模式</font>**
+
+```java
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        request.setAttribute(SESSION_REPOSITORY_ATTR, this.sessionRepository);
+        SessionRepositoryFilter<S>.SessionRepositoryRequestWrapper wrappedRequest = new SessionRepositoryRequestWrapper(request, response);
+        SessionRepositoryFilter<S>.SessionRepositoryResponseWrapper wrappedResponse = new SessionRepositoryResponseWrapper(wrappedRequest, response);
+
+        try {
+            filterChain.doFilter(wrappedRequest, wrappedResponse);
+        } finally {
+            wrappedRequest.commitSession();
+        }
+
+    }
+```
+
+
+
+![image-20240913140915448](assets/image-20240913140915448-1726898225016-3.png)
+
+
+
+
+
+![image-20240913141556868](assets/image-20240913141556868-1726898225016-4.png)
+
+
+
+底层用的还是RedisTemplate:
+
+![image-20240921135259727](assets/image-20240921135259727.png)
+
+
+
+注意：**<font color=red>服务端在redis里存的key是原始sessionID, 而浏览器里的是经过base64编码的sessionID</font>**
+
+redis里的：
+
+![image-20240921135046292](assets/image-20240921135046292.png)
+
+浏览器里的：
+
+![image-20240921134940078](assets/image-20240921134940078.png)
+
+redis里的用在线工具编码后和浏览器里的相同：
+
+![image-20240921134819576](../../java-note-0824/java-notes/谷粒商城/高级篇/assets/image-20240921134819576.png)
 
 ### 5.2 拦截器做统一鉴权认证
 
@@ -1702,6 +1801,19 @@ public class LoginUserInterceptor implements HandlerInterceptor {
             response.sendRedirect("http://auth.gulimall.com/login.html");
             return false;
         }
+    }
+}
+```
+
+
+
+```java
+@Configuration
+public class OrderWebConfig implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry){
+        // 添加LoginUserInterceptor拦截器，并拦截所有请求
+        registry.addInterceptor(new LoginUserInterceptor()).addPathPatterns("/**");
     }
 }
 ```
@@ -1748,7 +1860,7 @@ public class LoginUserInterceptor implements HandlerInterceptor {
 
 ![image-20240911010016837](assets/image-20240911010016837.png)
 
-因此每一个购物项信息，都是一个对象，基本字段包括：
+每一个购物项信息，都是一个对象，基本字段包括：
 
 ```json
 {

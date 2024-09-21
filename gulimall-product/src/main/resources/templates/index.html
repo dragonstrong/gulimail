@@ -245,8 +245,7 @@
                 <a href="/#"><img class="" src="/static/index/img/touxiang.png"></a>
               </div>
               <div class="user_info_show">
-                <a th:if="${session.loginUser!=null}">Hi,[[${session.loginUser.username}]]</a>
-                <a  th:if="${session.loginUser==null}">Hi, 欢迎来到!</a>
+                <a th:if="${session.loginUser!=null}">[[${session.loginUser.username}]]</a>
 
                 <!--
                 <p class="">Hi, 欢迎来到!</p>

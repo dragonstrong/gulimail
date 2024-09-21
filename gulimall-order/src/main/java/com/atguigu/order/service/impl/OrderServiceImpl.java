@@ -177,7 +177,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 }else{ // 锁定失败
                     log.error("远程调用gulimall-ware锁定库存失败");
                     submitOrderRespVo.setCode(OrderSubmitErrorEnum.STOCK_LOCK_FAIL.getCode());
-                    throw new NoStockExecption();  // 不手动抛异常：库存锁定失败订单不回滚
+                    throw new NoStockExecption();  // 因为库存接口手动catch了业务异常，这边无法感知，需要手动抛异常，否则库存锁定失败订单不回滚。若库存那边不手动catch，就无需这样。
                 }
             }else{
                 submitOrderRespVo.setCode(OrderSubmitErrorEnum.PRICE_CKECK_FAIL.getCode()); //验价失败
