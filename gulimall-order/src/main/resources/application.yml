@@ -22,7 +22,7 @@ spring:
     port: 6379
     password: 181181@Lq
 
-  ackson:
+  jackson:
     date-format: yyyy-MM-dd HH:mm:ss # 指定时间格式
   thymeleaf:
     cache: false #关闭thymeleaf缓存，方便开发期间看到实时效果
